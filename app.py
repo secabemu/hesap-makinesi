@@ -1,253 +1,795 @@
-from flask import Flask, render_template, request, jsonify
-import math, webbrowser, time, ssl, urllib.request, json
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Hesap Makinesi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --turuncu:   #F7941D;
+      --turuncu-k: #E07810;
+      --lacivert:  #003087;
+      --lacivert-k:#002060;
+      --mavi:      #0066CC;
+      --yesil:     #00A651;
+      --bg:        #F2F4F8;
+      --kart:      #FFFFFF;
+      --sinir:     #E0E6F0;
+      --metin:     #1A2340;
+      --soluk:     #6B7A99;
+      --s: clamp(12px, 3.2vw, 15px);
+    }
 
-app = Flask(__name__)
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; overflow-x: hidden; }
 
-# ── Önbellekler ───────────────────────────────────────────────────
-_kur_cache   = {}
-_kur_zaman   = 0
-_altin_cache = {}
-_altin_zaman = 0
-CACHE_SURE   = 120
-SSL_CTX      = ssl._create_unverified_context()
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: var(--s);
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: calc(var(--s)*.8) calc(var(--s)*.6) calc(var(--s)*2);
+    }
 
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    /* ── Ana Kart ── */
+    .kart {
+      width: 100%; max-width: 460px;
+      display: flex; flex-direction: column; gap: calc(var(--s)*.65);
+    }
 
-# ══════════════════════════════════════════════════════════════════
-#  DÖVİZ
-# ══════════════════════════════════════════════════════════════════
-def kurlari_getir():
-    global _kur_cache, _kur_zaman
-    if _kur_cache.get("USD") and (time.time() - _kur_zaman) < CACHE_SURE:
-        return _kur_cache
+    /* ── Üst Header ── */
+    .app-header {
+      background: linear-gradient(135deg, var(--lacivert), var(--mavi));
+      border-radius: calc(var(--s)*1.2);
+      padding: calc(var(--s)*1) calc(var(--s)*1.2);
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0,48,135,.25);
+    }
+    .app-logo {
+      display: flex; align-items: center; gap: calc(var(--s)*.5);
+    }
+    .app-logo .ikon {
+      width: calc(var(--s)*2.4); height: calc(var(--s)*2.4);
+      background: var(--turuncu);
+      border-radius: calc(var(--s)*.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: calc(var(--s)*1.2); font-weight: 800; color: white;
+    }
+    .app-logo span {
+      font-size: calc(var(--s)*.9); font-weight: 700;
+      color: white; letter-spacing: .5px;
+    }
+    .app-header-btn {
+      display: flex; gap: calc(var(--s)*.4);
+    }
+    .hdr-btn {
+      border: none; border-radius: 99px; cursor: pointer;
+      font-family: 'DM Mono', monospace; font-weight: 700;
+      transition: all .15s; -webkit-tap-highlight-color: transparent;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hdr-btn.esit {
+      background: var(--turuncu);
+      color: white;
+      font-size: calc(var(--s)*1.1);
+      padding: calc(var(--s)*.3) calc(var(--s)*1);
+      box-shadow: 0 3px 10px rgba(247,148,29,.4);
+      min-width: calc(var(--s)*3);
+    }
+    .hdr-btn.esit:active { background: var(--turuncu-k); transform: scale(.93); }
+    .hdr-btn.sifirla {
+      background: rgba(255,255,255,.18);
+      color: white;
+      font-size: calc(var(--s)*1.1);
+      padding: calc(var(--s)*.3) calc(var(--s)*1);
+      border: 1.5px solid rgba(255,255,255,.35);
+      min-width: calc(var(--s)*3);
+    }
+    .hdr-btn.sifirla:active { background: rgba(255,255,255,.3); transform: scale(.93); }
 
-    # yfinance
-    try:
-        import yfinance as yf
-        usd = yf.Ticker("USDTRY=X").fast_info["last_price"]
-        eur = yf.Ticker("EURTRY=X").fast_info["last_price"]
-        _kur_cache = {"USD": round(usd,4), "EUR": round(eur,4),
-                      "tarih": time.strftime("%Y-%m-%d"), "kaynak": "Yahoo"}
-        _kur_zaman = time.time()
-        print(f"✔ Döviz (yfinance): USD={usd:.4f} EUR={eur:.4f}")
-        return _kur_cache
-    except Exception as e:
-        print(f"✗ yfinance: {e}")
+    /* ── Panel Ortak ── */
+    .panel {
+      background: var(--kart);
+      border: 1px solid var(--sinir);
+      border-radius: calc(var(--s)*1);
+      padding: calc(var(--s)*.7) calc(var(--s)*.85);
+      box-shadow: 0 2px 12px rgba(0,48,135,.06);
+    }
+    .panel-baslik {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: calc(var(--s)*.5);
+      padding-bottom: calc(var(--s)*.45);
+      border-bottom: 1px solid var(--sinir);
+    }
+    .panel-baslik span {
+      font-size: calc(var(--s)*.68); font-weight: 700;
+      color: var(--lacivert); letter-spacing: .5px; text-transform: uppercase;
+    }
+    .yenile-btn {
+      font-size: calc(var(--s)*.75); color: var(--turuncu);
+      border: 1px solid var(--turuncu); background: none;
+      padding: .15rem .5rem; border-radius: 99px; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      transition: all .15s; -webkit-tap-highlight-color: transparent;
+    }
+    .yenile-btn:active { background: var(--turuncu); color: white; }
 
-    # Frankfurter fallback
-    try:
-        req = urllib.request.Request(
-            "https://api.frankfurter.app/latest?from=TRY&to=USD,EUR",
-            headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=6, context=SSL_CTX) as r:
-            d = json.loads(r.read())
-        _kur_cache = {"USD": round(1/d["rates"]["USD"],4),
-                      "EUR": round(1/d["rates"]["EUR"],4),
-                      "tarih": d["date"], "kaynak": "Frankfurter"}
-        _kur_zaman = time.time()
-        print(f"✔ Döviz (frankfurter): USD={_kur_cache['USD']} EUR={_kur_cache['EUR']}")
-        return _kur_cache
-    except Exception as e:
-        print(f"✗ frankfurter: {e}")
+    /* ── Döviz ── */
+    .doviz-satirlar { display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--s)*.5); }
+    .kur-kart {
+      border-radius: calc(var(--s)*.6);
+      padding: calc(var(--s)*.5) calc(var(--s)*.65);
+      border: 1.5px solid;
+    }
+    .kur-kart.usd { background: #F0FDF4; border-color: #BBF7D0; }
+    .kur-kart.eur { background: #EFF6FF; border-color: #BFDBFE; }
+    .kur-etiket {
+      font-size: calc(var(--s)*.62); font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .kur-kart.usd .kur-etiket { color: #16A34A; }
+    .kur-kart.eur .kur-etiket { color: #2563EB; }
+    .kur-deger {
+      font-family: 'DM Mono', monospace;
+      font-size: calc(var(--s)*1.05); font-weight: 500;
+      color: var(--metin); margin-top: calc(var(--s)*.1);
+    }
+    .kur-alt { font-size: calc(var(--s)*.55); color: var(--soluk); margin-top: calc(var(--s)*.05); }
 
-    if not _kur_cache.get("USD"):
-        _kur_cache = {"USD": None, "EUR": None, "tarih": "bağlantı yok", "kaynak": "yok"}
-    return _kur_cache
+    .doviz-butonlar {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: calc(var(--s)*.3); margin-top: calc(var(--s)*.5);
+    }
+    .d-btn {
+      font-size: calc(var(--s)*.62); font-weight: 600;
+      padding: calc(var(--s)*.32) calc(var(--s)*.1);
+      border-radius: calc(var(--s)*.5); border: 1.5px solid;
+      cursor: pointer; text-align: center; transition: all .12s;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .d-btn:active { transform: scale(.93); }
+    .d-btn.gu { background: #F0FDF4; border-color: #86EFAC; color: #16A34A; }
+    .d-btn.ug { background: #DCFCE7; border-color: #4ADE80; color: #15803D; }
+    .d-btn.ge { background: #EFF6FF; border-color: #93C5FD; color: #2563EB; }
+    .d-btn.eg { background: #DBEAFE; border-color: #60A5FA; color: #1D4ED8; }
 
+    /* ── Altın ── */
+    .altin-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: calc(var(--s)*.4); }
+    .altin-kart {
+      background: #FFFBEB; border: 1.5px solid #FDE68A;
+      border-radius: calc(var(--s)*.6);
+      padding: calc(var(--s)*.45) calc(var(--s)*.6);
+      cursor: pointer; transition: all .12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .altin-kart:active { background: #FEF3C7; transform: scale(.95); }
+    .altin-isim { font-size: calc(var(--s)*.62); font-weight: 700; color: #92400E; text-transform: uppercase; letter-spacing: .5px; }
+    .altin-fiyat { font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.92); font-weight: 500; color: var(--metin); margin-top: calc(var(--s)*.1); }
+    .altin-alt { font-size: calc(var(--s)*.52); color: var(--soluk); }
 
-# ══════════════════════════════════════════════════════════════════
-#  ALTIN — altinkaynak.com
-# ══════════════════════════════════════════════════════════════════
-def altin_getir():
-    global _altin_cache, _altin_zaman
-    if _altin_cache.get("gram24") and (time.time() - _altin_zaman) < CACHE_SURE:
-        return _altin_cache
+    .altin-butonlar {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: calc(var(--s)*.3); margin-top: calc(var(--s)*.5);
+    }
+    .a-btn {
+      font-size: calc(var(--s)*.6); font-weight: 600;
+      padding: calc(var(--s)*.32) calc(var(--s)*.1);
+      border-radius: calc(var(--s)*.5);
+      border: 1.5px solid #FDE68A;
+      background: #FFFBEB; color: #92400E;
+      cursor: pointer; text-align: center; transition: all .12s;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .a-btn:active { background: #FEF3C7; transform: scale(.93); }
 
-    # ── Yöntem 1: altinkaynak.com ─────────────────────────────────
-    try:
-        from bs4 import BeautifulSoup
-        req = urllib.request.Request(
-            "https://www.altinkaynak.com/Altin/Kur/Cesitleri",
-            headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=8, context=SSL_CTX) as r:
-            soup = BeautifulSoup(r.read(), "html.parser")
+    /* ── Ekran ── */
+    .ekran-alani {
+      background: var(--kart);
+      border: 1px solid var(--sinir);
+      border-radius: calc(var(--s)*1);
+      box-shadow: 0 2px 12px rgba(0,48,135,.06);
+      overflow: hidden;
+    }
+    .ekran-ust {
+      background: linear-gradient(135deg, var(--lacivert), var(--mavi));
+      padding: calc(var(--s)*.5) calc(var(--s)*1);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .ekran-etiket { font-size: calc(var(--s)*.62); color: rgba(255,255,255,.7); font-weight: 500; }
+    .ekran-expr   { font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.72); color: rgba(255,255,255,.85); }
 
-        sonuc = {}
-        for satir in soup.select("table tr"):
-            hucreler = satir.select("td")
-            if len(hucreler) < 3:
-                continue
-            isim = hucreler[0].get_text(strip=True).lower()
-            fiyat_str = hucreler[2].get_text(strip=True).replace(".", "").replace(",", ".")
-            try:
-                fiyat = float(fiyat_str)
-            except:
-                continue
+    .ekran-deger {
+      padding: calc(var(--s)*.6) calc(var(--s)*1) calc(var(--s)*.8);
+      text-align: right; cursor: pointer;
+      transition: background .15s;
+    }
+    .ekran-deger:active { background: #F8FAFF; }
+    .ekran-deger .deger {
+      font-family: 'DM Mono', monospace; font-weight: 500;
+      color: var(--metin); word-break: break-all;
+      transition: color .2s, font-size .15s;
+    }
+    .ekran-deger .ipucu {
+      font-size: calc(var(--s)*.58); color: var(--turuncu);
+      font-weight: 600; margin-top: calc(var(--s)*.2);
+      display: flex; align-items: center; justify-content: flex-end; gap: .3rem;
+    }
+    .ekran-deger .ipucu::before { content: ""; width: 6px; height: 6px; background: var(--turuncu); border-radius: 50%; display: inline-block; animation: blink 1.2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
 
-            if "gram" in isim and "24" in isim:
-                sonuc["gram24"] = fiyat
-            elif "gram" in isim and "22" in isim:
-                sonuc["gram22"] = fiyat
-            elif "gram" in isim and ("18" in isim or "14" in isim):
-                sonuc["gram18"] = fiyat
-            elif "cumhuriyet" in isim:
-                sonuc["cumhuriyet"] = fiyat
-            elif "çeyrek" in isim or "ceyrek" in isim:
-                sonuc["ceyrek"] = fiyat
-            elif "yarım" in isim or "yarim" in isim:
-                sonuc["yarim"] = fiyat
+    .deger.ok    { color: var(--yesil); }
+    .deger.error { color: #DC2626; }
+    .deger.doviz { color: var(--mavi); }
+    .deger.gold  { color: #B45309; }
 
-        if sonuc.get("gram24"):
-            sonuc["tarih"]  = time.strftime("%H:%M")
-            sonuc["kaynak"] = "altinkaynak.com"
-            _altin_cache = sonuc
-            _altin_zaman = time.time()
-            print(f"✔ Altın (altinkaynak): 24ayar={sonuc.get('gram24')} 22ayar={sonuc.get('gram22')}")
-            return _altin_cache
-        else:
-            print("✗ altinkaynak: veri parse edilemedi, fallback deneniyor")
-    except Exception as e:
-        print(f"✗ altinkaynak: {e}")
+    /* ── Bellek Çubuğu ── */
+    .mem-bar {
+      display: flex; gap: calc(var(--s)*.25);
+      padding: calc(var(--s)*.4) calc(var(--s)*.85);
+      border-top: 1px solid var(--sinir);
+    }
+    .mem-btn {
+      flex: 1; font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.62);
+      padding: calc(var(--s)*.28) 0; border: 1px solid var(--sinir);
+      border-radius: calc(var(--s)*.45); background: var(--bg);
+      color: var(--lacivert); cursor: pointer; font-weight: 600;
+      -webkit-tap-highlight-color: transparent; transition: all .12s;
+    }
+    .mem-btn:active { background: var(--lacivert); color: white; }
 
-    # ── Yöntem 2: bigpara.com ─────────────────────────────────────
-    try:
-        from bs4 import BeautifulSoup
-        req = urllib.request.Request(
-            "https://bigpara.hurriyet.com.tr/altin/",
-            headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=8, context=SSL_CTX) as r:
-            soup = BeautifulSoup(r.read(), "html.parser")
+    /* ── Bilimsel Tab ── */
+    .tab-bar {
+      display: flex; gap: calc(var(--s)*.3);
+      padding: calc(var(--s)*.4) calc(var(--s)*.85);
+      border-top: 1px solid var(--sinir);
+    }
+    .t-btn {
+      flex: 1; font-size: calc(var(--s)*.72); font-weight: 600;
+      padding: calc(var(--s)*.3); border-radius: calc(var(--s)*.5);
+      border: 1.5px solid var(--sinir); background: var(--bg);
+      color: var(--soluk); cursor: pointer; transition: all .18s;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .t-btn.aktif { background: var(--lacivert); color: white; border-color: var(--lacivert); }
+    .t-btn:active { transform: scale(.95); }
 
-        sonuc = {}
-        for satir in soup.select("tbody tr"):
-            hucreler = satir.select("td")
-            if len(hucreler) < 2:
-                continue
-            isim = hucreler[0].get_text(strip=True).lower()
-            fiyat_str = hucreler[1].get_text(strip=True).replace(".", "").replace(",", ".")
-            try:
-                fiyat = float(fiyat_str)
-            except:
-                continue
+    /* ── Klavye Panelleri ── */
+    .klavye-panel { display: none; }
+    .klavye-panel.aktif { display: grid; }
+    .grid-4 { grid-template-columns: repeat(4,1fr); gap: calc(var(--s)*.35); padding: calc(var(--s)*.5) calc(var(--s)*.85) calc(var(--s)*.7); }
+    .grid-5 { grid-template-columns: repeat(5,1fr); gap: calc(var(--s)*.28); padding: calc(var(--s)*.4) calc(var(--s)*.85) calc(var(--s)*.6); }
 
-            if "gram" in isim and ("24" in isim or "has" in isim):
-                sonuc["gram24"] = fiyat
-            elif "gram" in isim and "22" in isim:
-                sonuc["gram22"] = fiyat
-            elif "çeyrek" in isim or "ceyrek" in isim:
-                sonuc["ceyrek"] = fiyat
-            elif "cumhuriyet" in isim or "tam" in isim:
-                sonuc["cumhuriyet"] = fiyat
+    .k {
+      font-family: 'Inter', sans-serif; font-size: calc(var(--s)*.88); font-weight: 600;
+      padding: calc(var(--s)*.72) calc(var(--s)*.3);
+      border-radius: calc(var(--s)*.65); border: 1.5px solid var(--sinir);
+      background: var(--bg); color: var(--metin);
+      cursor: pointer; transition: all .1s;
+      -webkit-tap-highlight-color: transparent; user-select: none;
+    }
+    .k:active { transform: scale(.91); }
+    .k.op     { background: #EFF6FF; border-color: #BFDBFE; color: var(--mavi); font-weight: 700; }
+    .k.eq     { background: var(--turuncu); border-color: var(--turuncu); color: white; font-size: calc(var(--s)*1.1); font-weight: 700; box-shadow: 0 3px 10px rgba(247,148,29,.35); }
+    .k.eq:active { background: var(--turuncu-k); }
+    .k.clr    { background: #FEF2F2; border-color: #FECACA; color: #DC2626; font-weight: 700; }
+    .k.sci    { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; font-size: calc(var(--s)*.68); font-weight: 600; }
+    .k.num    { background: white; border-color: var(--sinir); font-size: calc(var(--s)*.95); }
 
-        if sonuc.get("gram24"):
-            sonuc["tarih"]  = time.strftime("%H:%M")
-            sonuc["kaynak"] = "bigpara.com"
-            _altin_cache = sonuc
-            _altin_zaman = time.time()
-            print(f"✔ Altın (bigpara): 24ayar={sonuc.get('gram24')}")
-            return _altin_cache
-    except Exception as e:
-        print(f"✗ bigpara: {e}")
+    /* ── Geçmiş ── */
+    .gecmis {
+      padding: calc(var(--s)*.4) calc(var(--s)*.85) calc(var(--s)*.5);
+      border-top: 1px solid var(--sinir);
+    }
+    .gecmis-baslik { font-size: calc(var(--s)*.6); font-weight: 700; color: var(--soluk); text-transform: uppercase; letter-spacing: 1px; margin-bottom: calc(var(--s)*.35); }
+    .gecmis-liste  { max-height: calc(var(--s)*4.5); overflow-y: auto; display: flex; flex-direction: column; gap: calc(var(--s)*.2); }
+    .gecmis-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: calc(var(--s)*.22) calc(var(--s)*.45);
+      background: var(--bg); border-radius: calc(var(--s)*.4);
+      cursor: pointer; transition: all .12s;
+      font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.67);
+      color: var(--soluk);
+    }
+    .gecmis-item:active { background: #EFF6FF; }
+    .gecmis-sonuc { color: var(--yesil); font-weight: 600; }
 
-    # ── Yöntem 3: yfinance ile altın (XAU/USD → TL) ──────────────
-    try:
-        import yfinance as yf
-        xau_usd = yf.Ticker("GC=F").fast_info["last_price"]   # ons fiyatı
-        usd_try = kurlari_getir().get("USD") or 0
-        if xau_usd and usd_try:
-            gram24 = round((xau_usd / 31.1035) * usd_try, 2)   # 1 ons = 31.1g
-            gram22 = round(gram24 * (22/24), 2)
-            gram18 = round(gram24 * (18/24), 2)
-            sonuc  = {
-                "gram24":     gram24,
-                "gram22":     gram22,
-                "gram18":     gram18,
-                "ceyrek":     round(gram24 * 1.75, 2),
-                "yarim":      round(gram24 * 3.5,  2),
-                "cumhuriyet": round(gram24 * 7.0,  2),
-                "tarih":      time.strftime("%H:%M"),
-                "kaynak":     "Yahoo (hesaplanmış)"
-            }
-            _altin_cache = sonuc
-            _altin_zaman = time.time()
-            print(f"✔ Altın (yfinance hesap): 24ayar={gram24}")
-            return _altin_cache
-    except Exception as e:
-        print(f"✗ yfinance altin: {e}")
+    /* ══════════════════════════════════════════════
+       NUMARA KLAVYE MODAL (Banka stili)
+    ══════════════════════════════════════════════ */
+    .modal-arka {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0); transition: background .25s;
+    }
+    .modal-arka.acik {
+      display: block;
+      background: rgba(0,30,80,.45);
+      backdrop-filter: blur(4px);
+    }
+    .modal-icerik {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 460px;
+      background: var(--kart);
+      border-radius: calc(var(--s)*1.5) calc(var(--s)*1.5) 0 0;
+      box-shadow: 0 -8px 40px rgba(0,30,80,.2);
+      transition: transform .3s cubic-bezier(.32,1.2,.5,1);
+      transform: translateX(-50%) translateY(100%);
+      overflow: hidden;
+    }
+    .modal-arka.acik .modal-icerik {
+      transform: translateX(-50%) translateY(0);
+    }
 
-    if not _altin_cache.get("gram24"):
-        _altin_cache = {"hata": "Altın verisi alınamadı", "tarih": "—", "kaynak": "yok"}
-    return _altin_cache
+    /* Modal Ekran */
+    .modal-ekran {
+      background: linear-gradient(135deg, var(--lacivert), var(--mavi));
+      padding: calc(var(--s)*.8) calc(var(--s)*1.2) calc(var(--s)*1);
+    }
+    .modal-expr { font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.72); color: rgba(255,255,255,.7); min-height: 1.2em; }
+    .modal-deger {
+      font-family: 'DM Mono', monospace; font-weight: 500;
+      color: white; text-align: right;
+      transition: font-size .1s;
+    }
 
+    /* Modal Numpad */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: calc(var(--s)*.35);
+      padding: calc(var(--s)*.7) calc(var(--s)*.85) calc(var(--s)*1);
+    }
+    .np {
+      font-family: 'Inter', sans-serif; font-size: calc(var(--s)*1.1); font-weight: 600;
+      padding: calc(var(--s)*.78) calc(var(--s)*.3);
+      border-radius: calc(var(--s)*.75); border: 1.5px solid var(--sinir);
+      background: var(--bg); color: var(--metin);
+      cursor: pointer; transition: all .1s; text-align: center;
+      -webkit-tap-highlight-color: transparent; user-select: none;
+    }
+    .np:active { transform: scale(.9); background: #E0E8FF; }
+    .np.sil  { background: #FEF2F2; border-color: #FECACA; color: #DC2626; font-size: calc(var(--s)*1.2); }
+    .np.sil:active { background: #FEE2E2; }
+    .np.tamam {
+      background: var(--turuncu); border-color: var(--turuncu); color: white;
+      font-size: calc(var(--s)*.82); letter-spacing: .5px;
+      box-shadow: 0 3px 12px rgba(247,148,29,.4);
+    }
+    .np.tamam:active { background: var(--turuncu-k); }
+    .np.isaret { background: #EFF6FF; border-color: #BFDBFE; color: var(--mavi); }
+    .np.virgul { font-weight: 700; }
 
-# ══════════════════════════════════════════════════════════════════
-#  FLASK ROUTE'LAR
-# ══════════════════════════════════════════════════════════════════
-@app.route("/")
-def index():
-    return render_template("index.html")
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+    .yukleniyor { animation: pulse 1.5s infinite; }
+  </style>
+</head>
+<body>
+<div class="kart">
 
-@app.route("/api/kur")
-def kur():
-    return jsonify(kurlari_getir())
+  <!-- ══ HEADER ══ -->
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="ikon">₺</div>
+      <span>Hesap Makinesi</span>
+    </div>
+    <div class="app-header-btn">
+      <button class="hdr-btn esit"    onclick="hesapla()"  title="Hesapla">=</button>
+      <button class="hdr-btn sifirla" onclick="temizle()"  title="Sıfırla">↺</button>
+    </div>
+  </div>
 
-@app.route("/api/altin")
-def altin():
-    return jsonify(altin_getir())
+  <!-- ══ DÖVİZ ══ -->
+  <div class="panel">
+    <div class="panel-baslik">
+      <span>📡 Canlı Döviz</span>
+      <button class="yenile-btn" onclick="kurlariGuncelle()">↻ Yenile</button>
+    </div>
+    <div class="doviz-satirlar">
+      <div class="kur-kart usd">
+        <div class="kur-etiket">USD / TL</div>
+        <div class="kur-deger" id="usdDeger"><span class="yukleniyor">—</span></div>
+        <div class="kur-alt"   id="usdTarih">Yükleniyor...</div>
+      </div>
+      <div class="kur-kart eur">
+        <div class="kur-etiket">EUR / TL</div>
+        <div class="kur-deger" id="eurDeger"><span class="yukleniyor">—</span></div>
+        <div class="kur-alt"   id="eurTarih">Yükleniyor...</div>
+      </div>
+    </div>
+    <div class="doviz-butonlar">
+      <button class="d-btn gu" onclick="dovizCevir('TL→USD')">TL→$</button>
+      <button class="d-btn ug" onclick="dovizCevir('USD→TL')">$→TL</button>
+      <button class="d-btn ge" onclick="dovizCevir('TL→EUR')">TL→€</button>
+      <button class="d-btn eg" onclick="dovizCevir('EUR→TL')">€→TL</button>
+    </div>
+  </div>
 
-@app.route("/hesapla", methods=["POST"])
-def hesapla():
-    data  = request.json
-    islem = data.get("islem")
-    a_str = data.get("a", "")
-    b_str = data.get("b", "")
-    try:
-        a = float(a_str) if a_str != "" else None
-        b = float(b_str) if b_str != "" else None
-        if   islem == "toplama":    sonuc = a + b
-        elif islem == "cikarma":    sonuc = a - b
-        elif islem == "carpma":     sonuc = a * b
-        elif islem == "bolme":
-            if b == 0: return jsonify({"hata": "Sıfıra bölme hatası!"})
-            sonuc = a / b
-        elif islem == "mod":
-            if b == 0: return jsonify({"hata": "Sıfıra mod hatası!"})
-            sonuc = a % b
-        elif islem == "us":         sonuc = a ** b
-        elif islem == "karekök":
-            if a < 0: return jsonify({"hata": "Negatif sayının karekökü alınamaz!"})
-            sonuc = math.sqrt(a)
-        elif islem == "kare":       sonuc = a ** 2
-        elif islem == "kup":        sonuc = a ** 3
-        elif islem == "ters":
-            if a == 0: return jsonify({"hata": "Sıfırın tersi tanımsız!"})
-            sonuc = 1 / a
-        elif islem == "abs":        sonuc = abs(a)
-        elif islem == "faktöriyel":
-            if a < 0 or a != int(a): return jsonify({"hata": "Pozitif tam sayı girin!"})
-            if a > 170:              return jsonify({"hata": "Sayı çok büyük!"})
-            sonuc = math.factorial(int(a))
-        elif islem == "log":
-            if a <= 0: return jsonify({"hata": "Log için pozitif sayı girin!"})
-            sonuc = math.log10(a)
-        elif islem == "ln":
-            if a <= 0: return jsonify({"hata": "Ln için pozitif sayı girin!"})
-            sonuc = math.log(a)
-        elif islem == "sin":        sonuc = math.sin(math.radians(a))
-        elif islem == "cos":        sonuc = math.cos(math.radians(a))
-        elif islem == "tan":        sonuc = math.tan(math.radians(a))
-        else: return jsonify({"hata": "Bilinmeyen işlem!"})
+  <!-- ══ ALTIN ══ -->
+  <div class="panel">
+    <div class="panel-baslik">
+      <span>🥇 Altın (altinkaynak.com)</span>
+      <button class="yenile-btn" onclick="altinGuncelle()">↻ Yenile</button>
+    </div>
+    <div class="altin-grid">
+      <div class="altin-kart" onclick="altinEkrana('gram24')">
+        <div class="altin-isim">24 Ayar Gram</div>
+        <div class="altin-fiyat" id="ag24"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / gram</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('gram22')">
+        <div class="altin-isim">22 Ayar Gram</div>
+        <div class="altin-fiyat" id="ag22"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / gram</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('ceyrek')">
+        <div class="altin-isim">Çeyrek Altın</div>
+        <div class="altin-fiyat" id="agCeyrek"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / adet</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('yarim')">
+        <div class="altin-isim">Yarım Altın</div>
+        <div class="altin-fiyat" id="agYarim"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / adet</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('cumhuriyet')" style="grid-column:span 2;">
+        <div class="altin-isim">Cumhuriyet Altını</div>
+        <div class="altin-fiyat" id="agCum"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / adet</div>
+      </div>
+    </div>
+    <div class="altin-butonlar">
+      <button class="a-btn" onclick="altinCevir('TL→gr24')">TL→gr(24)</button>
+      <button class="a-btn" onclick="altinCevir('gr24→TL')">gr(24)→TL</button>
+      <button class="a-btn" onclick="altinCevir('TL→gr22')">TL→gr(22)</button>
+      <button class="a-btn" onclick="altinCevir('gr22→TL')">gr(22)→TL</button>
+    </div>
+    <div class="kur-alt" id="altinKaynak" style="text-align:right;margin-top:.4rem;"></div>
+  </div>
 
-        if isinstance(sonuc, float) and sonuc.is_integer(): sonuc = int(sonuc)
-        elif isinstance(sonuc, float): sonuc = round(sonuc, 8)
-        return jsonify({"sonuc": sonuc})
-    except Exception as e:
-        return jsonify({"hata": str(e)})
+  <!-- ══ HESAP MAKİNESİ EKRANI ══ -->
+  <div class="ekran-alani">
 
+    <!-- Üst bilgi -->
+    <div class="ekran-ust">
+      <span class="ekran-etiket" id="ekranEtiket">Temel Mod</span>
+      <span class="ekran-expr"   id="expr"></span>
+    </div>
 
-if __name__ == "__main__":
-    print("Veriler yükleniyor...")
-    kurlari_getir()
-    altin_getir()
-    webbrowser.open("http://127.0.0.1:5000")
-    app.run(debug=False)
+    <!-- Tıklanabilir ekran -->
+    <div class="ekran-deger" onclick="modalAc()">
+      <div class="deger" id="result" style="font-size:calc(var(--s)*2.1)">0</div>
+      <div class="ipucu">Rakam girmek için dokun</div>
+    </div>
+
+    <!-- Bellek -->
+    <div class="mem-bar">
+      <button class="mem-btn" onclick="memClear()">MC</button>
+      <button class="mem-btn" onclick="memRecall()">MR</button>
+      <button class="mem-btn" onclick="memAdd()">M+</button>
+      <button class="mem-btn" onclick="memSub()">M−</button>
+      <button class="mem-btn" onclick="memStore()">MS</button>
+    </div>
+
+    <!-- Tab -->
+    <div class="tab-bar">
+      <button class="t-btn aktif" onclick="switchTab('temel',this)">Temel</button>
+      <button class="t-btn"       onclick="switchTab('bilim',this)">Bilimsel</button>
+    </div>
+
+    <!-- TEMEL PANEL -->
+    <div class="klavye-panel aktif grid-4" id="panel-temel">
+      <button class="k clr" onclick="temizle()" style="grid-column:span 2">AC</button>
+      <button class="k op"  onclick="sil()">⌫</button>
+      <button class="k op"  onclick="setOp('mod','%')">%</button>
+      <button class="k sci" onclick="appendConst(Math.PI,'π')">π</button>
+      <button class="k sci" onclick="append('(')">(</button>
+      <button class="k sci" onclick="append(')')">)</button>
+      <button class="k op"  onclick="setOp('us','xʸ')">xʸ</button>
+      <button class="k num" onclick="append('7')">7</button>
+      <button class="k num" onclick="append('8')">8</button>
+      <button class="k num" onclick="append('9')">9</button>
+      <button class="k op"  onclick="setOp('bolme','÷')">÷</button>
+      <button class="k num" onclick="append('4')">4</button>
+      <button class="k num" onclick="append('5')">5</button>
+      <button class="k num" onclick="append('6')">6</button>
+      <button class="k op"  onclick="setOp('carpma','×')">×</button>
+      <button class="k num" onclick="append('1')">1</button>
+      <button class="k num" onclick="append('2')">2</button>
+      <button class="k num" onclick="append('3')">3</button>
+      <button class="k op"  onclick="setOp('cikarma','−')">−</button>
+      <button class="k num" onclick="toggleSign()">+/−</button>
+      <button class="k num" onclick="append('0')">0</button>
+      <button class="k num" onclick="append('.')">.</button>
+      <button class="k op"  onclick="setOp('toplama','+')">+</button>
+      <button class="k eq"  onclick="hesapla()" style="grid-column:span 4">=</button>
+    </div>
+
+    <!-- BİLİMSEL PANEL -->
+    <div class="klavye-panel grid-5" id="panel-bilim">
+      <button class="k sci" onclick="sciHesapla('karekök')">√x</button>
+      <button class="k sci" onclick="sciHesapla('kare')">x²</button>
+      <button class="k sci" onclick="sciHesapla('kup')">x³</button>
+      <button class="k sci" onclick="sciHesapla('faktöriyel')">x!</button>
+      <button class="k sci" onclick="sciHesapla('log')">log</button>
+      <button class="k sci" onclick="sciHesapla('ln')">ln</button>
+      <button class="k sci" onclick="sciHesapla('sin')">sin°</button>
+      <button class="k sci" onclick="sciHesapla('cos')">cos°</button>
+      <button class="k sci" onclick="sciHesapla('tan')">tan°</button>
+      <button class="k sci" onclick="sciHesapla('ters')">1/x</button>
+      <button class="k sci" onclick="appendConst(Math.PI,'π')">π</button>
+      <button class="k sci" onclick="appendConst(Math.E,'e')">e</button>
+      <button class="k sci" onclick="sciHesapla('abs')">|x|</button>
+      <button class="k clr" onclick="temizle()">AC</button>
+      <button class="k op"  onclick="sil()">⌫</button>
+      <button class="k num" onclick="append('7')">7</button>
+      <button class="k num" onclick="append('8')">8</button>
+      <button class="k num" onclick="append('9')">9</button>
+      <button class="k op"  onclick="setOp('bolme','÷')">÷</button>
+      <button class="k op"  onclick="setOp('carpma','×')">×</button>
+      <button class="k num" onclick="append('4')">4</button>
+      <button class="k num" onclick="append('5')">5</button>
+      <button class="k num" onclick="append('6')">6</button>
+      <button class="k op"  onclick="setOp('cikarma','−')">−</button>
+      <button class="k op"  onclick="setOp('toplama','+')">+</button>
+      <button class="k num" onclick="append('1')">1</button>
+      <button class="k num" onclick="append('2')">2</button>
+      <button class="k num" onclick="append('3')">3</button>
+      <button class="k num" onclick="append('0')" style="grid-column:span 2">0</button>
+      <button class="k eq"  onclick="hesapla()" style="grid-column:span 5">=</button>
+    </div>
+
+    <!-- Geçmiş -->
+    <div class="gecmis">
+      <div class="gecmis-baslik">Son İşlemler</div>
+      <div class="gecmis-liste" id="histList"></div>
+    </div>
+
+  </div><!-- /ekran-alani -->
+
+</div><!-- /kart -->
+
+<!-- ══ BANKA STİLİ NUMPAD MODAL ══ -->
+<div class="modal-arka" id="modalArka" onclick="modalDis(event)">
+  <div class="modal-icerik" id="modalIcerik">
+
+    <!-- Modal Ekran -->
+    <div class="modal-ekran">
+      <div class="modal-expr"  id="modalExpr"></div>
+      <div class="modal-deger" id="modalDeger" style="font-size:calc(var(--s)*2.2)">0</div>
+    </div>
+
+    <!-- Numpad -->
+    <div class="numpad">
+      <button class="np" onclick="npGir('7')">7</button>
+      <button class="np" onclick="npGir('8')">8</button>
+      <button class="np" onclick="npGir('9')">9</button>
+
+      <button class="np" onclick="npGir('4')">4</button>
+      <button class="np" onclick="npGir('5')">5</button>
+      <button class="np" onclick="npGir('6')">6</button>
+
+      <button class="np" onclick="npGir('1')">1</button>
+      <button class="np" onclick="npGir('2')">2</button>
+      <button class="np" onclick="npGir('3')">3</button>
+
+      <button class="np isaret" onclick="npToggleSign()">+/−</button>
+      <button class="np virgul" onclick="npGir('.')">.</button>
+      <button class="np sil"    onclick="npSil()">⌫</button>
+
+      <button class="np" onclick="npGir('0')" style="grid-column:span 2">0</button>
+      <button class="np tamam"  onclick="modalKapat()">Tamam</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Durum ─────────────────────────────────────────────────────
+let ham="0", tampon=null, mevcutOp=null, opSembol="", yeniGiris=true, bellek=0;
+let aktifKurlar={USD:null,EUR:null}, aktifAltin={};
+
+const resultEl  = document.getElementById("result");
+const exprEl    = document.getElementById("expr");
+const modalDegerEl = document.getElementById("modalDeger");
+const modalExprEl  = document.getElementById("modalExpr");
+
+// ── Format ────────────────────────────────────────────────────
+function fmt(h) {
+  if(!h||h==="-") return h||"0";
+  const eksi=h.startsWith("-")?"-":"";
+  const poz=h.replace("-","");
+  const [tam,on]=poz.split(".");
+  return eksi+tam.replace(/\B(?=(\d{3})+(?!\d))/g,".")+(on!==undefined?","+on:"");
+}
+
+function guncelle(cls="") {
+  const txt=fmt(ham);
+  resultEl.textContent=txt;
+  resultEl.className="deger"+(cls?" "+cls:"");
+  const n=txt.replace(/[^\d]/g,"").length;
+  const s=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--s"))||14;
+  resultEl.style.fontSize=n>12?`${s*1.3}px`:n>9?`${s*1.65}px`:`${s*2.1}px`;
+  // Modal ekranı da güncelle
+  modalDegerEl.textContent=txt;
+  const mn=txt.replace(/[^\d]/g,"").length;
+  modalDegerEl.style.fontSize=mn>12?`${s*1.4}px`:mn>9?`${s*1.8}px`:`${s*2.2}px`;
+  modalExprEl.textContent=exprEl.textContent;
+}
+
+// ── Modal ─────────────────────────────────────────────────────
+function modalAc() {
+  const el=document.getElementById("modalArka");
+  el.style.display="block";
+  setTimeout(()=>el.classList.add("acik"),10);
+}
+function modalKapat() {
+  const el=document.getElementById("modalArka");
+  el.classList.remove("acik");
+  setTimeout(()=>el.style.display="none",300);
+}
+function modalDis(e) {
+  if(e.target===document.getElementById("modalArka")) modalKapat();
+}
+
+// Numpad giriş
+function npGir(k) {
+  if(yeniGiris){ham="";yeniGiris=false;}
+  if(k==="."&&ham.includes("."))return;
+  if((ham==="0"||ham==="")&&k!=".")ham=k; else ham+=k;
+  guncelle();
+}
+function npSil() { ham=ham.length>1?ham.slice(0,-1):"0"; guncelle(); }
+function npToggleSign() {
+  if(ham.startsWith("-"))ham=ham.slice(1);
+  else if(ham!=="0")ham="-"+ham;
+  guncelle();
+}
+
+// ── Hesap Makinesi ────────────────────────────────────────────
+function append(k) {
+  if(yeniGiris){ham="";yeniGiris=false;}
+  if(k==="."&&ham.includes("."))return;
+  if((ham==="0"||ham==="")&&k!=="."&&k!=="("&&k!==")")ham=k; else ham+=k;
+  guncelle();
+}
+function appendConst(v,l){ham=String(v);exprEl.textContent=l;guncelle();}
+function toggleSign(){if(ham.startsWith("-"))ham=ham.slice(1);else if(ham!=="0")ham="-"+ham;guncelle();}
+function sil(){ham=ham.length>1?ham.slice(0,-1):"0";guncelle();}
+function temizle(){ham="0";tampon=null;mevcutOp=null;opSembol="";exprEl.textContent="";guncelle();}
+function setOp(op,s){tampon=parseFloat(ham);mevcutOp=op;opSembol=s;exprEl.textContent=`${fmt(ham)} ${s}`;yeniGiris=true;guncelle();}
+
+async function hesapla(){
+  if(!mevcutOp)return;
+  const b=parseFloat(ham);
+  exprEl.textContent=`${fmt(String(tampon))} ${opSembol} ${fmt(ham)} =`;
+  await apiHesapla({islem:mevcutOp,a:tampon,b},`${tampon} ${opSembol} ${b}`);
+  mevcutOp=null;
+}
+async function sciHesapla(op){
+  const a=parseFloat(ham);
+  exprEl.textContent=`${op}(${fmt(ham)}) =`;
+  await apiHesapla({islem:op,a},`${op}(${a})`);
+}
+async function apiHesapla(p,ifade){
+  try{
+    const r=await fetch("/hesapla",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});
+    const d=await r.json();
+    if(d.hata){ham="";resultEl.textContent=d.hata;resultEl.className="deger error";resultEl.style.fontSize="";}
+    else{ham=String(d.sonuc);guncelle("ok");histEkle(ifade,d.sonuc);setTimeout(()=>resultEl.classList.remove("ok"),700);}
+  }catch(e){resultEl.textContent="Hata";resultEl.className="deger error";}
+  yeniGiris=true;
+}
+
+// ── Bellek ────────────────────────────────────────────────────
+function memStore() {bellek=parseFloat(ham);exprEl.textContent=`MS → ${fmt(ham)}`;}
+function memRecall(){ham=String(bellek);guncelle();}
+function memClear() {bellek=0;exprEl.textContent="Bellek temizlendi";}
+function memAdd()   {bellek+=parseFloat(ham);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
+function memSub()   {bellek-=parseFloat(ham);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
+
+// ── Tab ───────────────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll(".klavye-panel").forEach(p=>{p.classList.remove("aktif");p.style.display="none";});
+  document.querySelectorAll(".t-btn").forEach(t=>t.classList.remove("aktif"));
+  const p=document.getElementById("panel-"+id);
+  p.style.display="grid"; p.classList.add("aktif"); btn.classList.add("aktif");
+  document.getElementById("ekranEtiket").textContent=id==="temel"?"Temel Mod":"Bilimsel Mod";
+}
+
+// ── Geçmiş ────────────────────────────────────────────────────
+function histEkle(ifade,sonuc){
+  const list=document.getElementById("histList");
+  const div=document.createElement("div");
+  div.className="gecmis-item";
+  const g=typeof sonuc==="number"?sonuc.toLocaleString("tr-TR",{maximumFractionDigits:4}):sonuc;
+  div.innerHTML=`<span>${ifade}</span><span class="gecmis-sonuc">${g}</span>`;
+  div.onclick=()=>{ham=String(sonuc);guncelle();};
+  list.prepend(div);
+  if(list.children.length>8)list.lastChild.remove();
+}
+
+// ── Döviz ─────────────────────────────────────────────────────
+async function kurlariGuncelle(){
+  try{
+    const k=await fetch("/api/kur").then(r=>r.json());
+    if(!k.USD)return; aktifKurlar=k;
+    document.getElementById("usdDeger").textContent=k.USD.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+    document.getElementById("eurDeger").textContent=k.EUR.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+    document.getElementById("usdTarih").textContent=k.tarih+" · "+(k.kaynak||"");
+    document.getElementById("eurTarih").textContent=k.tarih+" · "+(k.kaynak||"");
+  }catch(e){}
+}
+function dovizCevir(y){
+  const d=parseFloat(ham);if(isNaN(d))return;
+  let s,i;
+  if(y==="TL→USD"){if(!aktifKurlar.USD)return;s=d/aktifKurlar.USD;i=`${fmt(ham)} ₺→$`;}
+  else if(y==="USD→TL"){if(!aktifKurlar.USD)return;s=d*aktifKurlar.USD;i=`$${fmt(ham)}→₺`;}
+  else if(y==="TL→EUR"){if(!aktifKurlar.EUR)return;s=d/aktifKurlar.EUR;i=`${fmt(ham)} ₺→€`;}
+  else if(y==="EUR→TL"){if(!aktifKurlar.EUR)return;s=d*aktifKurlar.EUR;i=`€${fmt(ham)}→₺`;}
+  s=Math.round(s*100)/100;
+  exprEl.textContent=i; ham=String(s); guncelle("doviz");
+  histEkle(i,s); yeniGiris=true;
+}
+
+// ── Altın ─────────────────────────────────────────────────────
+function fp(id,v){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=v?v.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+}
+async function altinGuncelle(){
+  try{
+    const d=await fetch("/api/altin").then(r=>r.json());
+    if(d.hata){document.getElementById("altinKaynak").textContent=d.hata;return;}
+    aktifAltin=d;
+    fp("ag24",d.gram24); fp("ag22",d.gram22);
+    fp("agCeyrek",d.ceyrek); fp("agYarim",d.yarim); fp("agCum",d.cumhuriyet);
+    document.getElementById("altinKaynak").textContent=(d.tarih||"")+" · "+(d.kaynak||"");
+  }catch(e){}
+}
+function altinEkrana(t){
+  const f=aktifAltin[t];if(!f)return;
+  ham=String(f);
+  const n={gram24:"24 Ayar Gram",gram22:"22 Ayar Gram",ceyrek:"Çeyrek Altın",yarim:"Yarım Altın",cumhuriyet:"Cumhuriyet Altını"};
+  exprEl.textContent=n[t]||t; guncelle("gold"); yeniGiris=true;
+}
+function altinCevir(y){
+  const d=parseFloat(ham);if(isNaN(d))return;
+  let s,i;
+  if(y==="TL→gr24"){if(!aktifAltin.gram24)return;s=d/aktifAltin.gram24;i=`${fmt(ham)} ₺→gr(24)`;}
+  else if(y==="gr24→TL"){if(!aktifAltin.gram24)return;s=d*aktifAltin.gram24;i=`${ham}gr(24)→₺`;}
+  else if(y==="TL→gr22"){if(!aktifAltin.gram22)return;s=d/aktifAltin.gram22;i=`${fmt(ham)} ₺→gr(22)`;}
+  else if(y==="gr22→TL"){if(!aktifAltin.gram22)return;s=d*aktifAltin.gram22;i=`${ham}gr(22)→₺`;}
+  s=Math.round(s*1000)/1000;
+  exprEl.textContent=i; ham=String(s); guncelle("gold");
+  histEkle(i,s); yeniGiris=true;
+}
+
+// ── Klavye ────────────────────────────────────────────────────
+document.addEventListener("keydown",e=>{
+  if("0123456789".includes(e.key))append(e.key);
+  else if(e.key==="."||e.key===",")append(".");
+  else if(e.key==="Backspace")sil();
+  else if(e.key==="Escape"){temizle();modalKapat();}
+  else if(e.key==="Enter"||e.key==="=")hesapla();
+  else if(e.key==="+")setOp("toplama","+");
+  else if(e.key==="-")setOp("cikarma","−");
+  else if(e.key==="*")setOp("carpma","×");
+  else if(e.key==="/"){e.preventDefault();setOp("bolme","÷");}
+  else if(e.key==="%")setOp("mod","%");
+});
+
+// ── Başlat ────────────────────────────────────────────────────
+kurlariGuncelle();
+altinGuncelle();
+setInterval(kurlariGuncelle,60000);
+setInterval(altinGuncelle,120000);
+</script>
+</body>
+</html>
