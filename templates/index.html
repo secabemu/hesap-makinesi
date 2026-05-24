@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>Hesap Makinesi</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet"/>
   <style>
@@ -18,176 +18,188 @@
       --usd:    #16a34a;
       --eur:    #2563eb;
       --gold:   #b45309;
-      --gold-l: #fef3c7;
     }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: 'Outfit', sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 1.5rem 1rem 2rem;
-      overflow-x: hidden;
+      padding: 1rem .75rem 2rem;
       background: #e8d5ff;
+      position: relative;
     }
+
     body::before {
       content: '';
       position: fixed; inset: -50%;
       background: conic-gradient(from 0deg at 30% 40%, #c084fc, #818cf8, #67e8f9, #34d399, #fbbf24, #f472b6, #c084fc);
       animation: spin 18s linear infinite;
-      opacity: .55; filter: blur(60px); pointer-events: none;
+      opacity: .5; filter: blur(60px); pointer-events: none;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .blob { position: fixed; border-radius: 50%; filter: blur(45px); opacity: .4; animation: float 8s ease-in-out infinite; }
-    .blob1 { width:300px;height:300px;background:#a78bfa;top:-80px;left:-80px; }
-    .blob2 { width:240px;height:240px;background:#67e8f9;bottom:-60px;right:-60px;animation-delay:-3s; }
-    .blob3 { width:180px;height:180px;background:#fbbf24;top:50%;left:70%;animation-delay:-5s; }
-    @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(18px,-22px);}}
+
+    .blob { position: fixed; border-radius: 50%; filter: blur(40px); opacity: .35; animation: float 8s ease-in-out infinite; }
+    .blob1 { width:220px;height:220px;background:#a78bfa;top:-60px;left:-60px; }
+    .blob2 { width:180px;height:180px;background:#67e8f9;bottom:-40px;right:-40px;animation-delay:-3s; }
+    .blob3 { width:150px;height:150px;background:#fbbf24;top:50%;left:72%;animation-delay:-5s; }
+    @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(12px,-16px);}}
 
     .card {
       position: relative; z-index: 10;
-      width: 100%; max-width: 460px;
+      width: 100%; max-width: 440px;
       background: var(--glass);
       backdrop-filter: blur(28px) saturate(1.8);
       -webkit-backdrop-filter: blur(28px) saturate(1.8);
       border: 1.5px solid var(--border);
-      border-radius: 28px;
-      padding: 1.4rem 1.4rem 1.6rem;
+      border-radius: 24px;
+      padding: 1.1rem 1.1rem 1.4rem;
       box-shadow: 0 8px 40px var(--shadow), 0 1.5px 0 rgba(255,255,255,0.6) inset;
-      animation: slideUp .5s cubic-bezier(.22,1,.36,1);
+      animation: slideUp .45s cubic-bezier(.22,1,.36,1);
     }
-    @keyframes slideUp{from{opacity:0;transform:translateY(30px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 
-    /* ── Panel ortak stil ── */
+    /* ── Panel ortak ── */
     .panel-kart {
       background: rgba(255,255,255,0.5);
       border: 1px solid rgba(255,255,255,0.7);
-      border-radius: 14px;
-      padding: .8rem .95rem;
-      margin-bottom: .9rem;
+      border-radius: 12px;
+      padding: .6rem .8rem;
+      margin-bottom: .75rem;
     }
     .panel-baslik {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: .55rem;
+      margin-bottom: .45rem;
     }
     .panel-baslik span {
-      font-size: .63rem; font-weight: 700; letter-spacing: 2px;
+      font-size: .58rem; font-weight: 700; letter-spacing: 1.8px;
       text-transform: uppercase; color: var(--muted);
       font-family: 'DM Mono', monospace;
     }
     .yenile-btn {
-      font-size: .63rem; color: var(--muted); font-family: 'DM Mono', monospace;
+      font-size: .58rem; color: var(--muted); font-family: 'DM Mono', monospace;
       cursor: pointer; border: none; background: none;
-      padding: .18rem .5rem; border-radius: 99px; transition: background .15s;
+      padding: .15rem .4rem; border-radius: 99px; transition: background .15s;
     }
     .yenile-btn:hover { background: rgba(124,58,237,.1); color: var(--accent); }
 
     /* ── Döviz ── */
-    .doviz-satirlar { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; }
-    .kur-kart { border-radius: 10px; padding: .55rem .75rem; }
+    .doviz-satirlar { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+    .kur-kart { border-radius: 9px; padding: .45rem .6rem; }
     .kur-kart.usd { background:rgba(22,163,74,.08); border:1px solid rgba(22,163,74,.2); }
     .kur-kart.eur { background:rgba(37,99,235,.08); border:1px solid rgba(37,99,235,.2); }
-    .kur-etiket { font-size:.63rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; font-family:'DM Mono',monospace; }
+    .kur-etiket { font-size:.58rem; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; font-family:'DM Mono',monospace; }
     .kur-kart.usd .kur-etiket { color:var(--usd); }
     .kur-kart.eur .kur-etiket { color:var(--eur); }
-    .kur-deger { font-size:1.15rem; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); }
-    .kur-alt   { font-size:.6rem; color:var(--muted); font-family:'DM Mono',monospace; }
+    .kur-deger { font-size:1.05rem; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); line-height:1.3; }
+    .kur-alt   { font-size:.55rem; color:var(--muted); font-family:'DM Mono',monospace; }
 
-    .donusum-butonlar { display:grid; grid-template-columns:repeat(4,1fr); gap:.35rem; margin-top:.4rem; }
+    .donusum-butonlar { display:grid; grid-template-columns:repeat(4,1fr); gap:.3rem; margin-top:.4rem; }
     .don-btn {
-      font-family:'DM Mono',monospace; font-size:.65rem; font-weight:600;
-      padding:.38rem .2rem; border-radius:8px; border:1.5px solid;
+      font-family:'DM Mono',monospace; font-size:.6rem; font-weight:600;
+      padding:.32rem .1rem; border-radius:7px; border:1.5px solid;
       cursor:pointer; transition:all .15s; text-align:center;
     }
-    .don-btn:hover  { transform:translateY(-1px); }
-    .don-btn:active { transform:scale(.96); }
-    .don-btn.tl-usd { background:rgba(22,163,74,.08);  border-color:rgba(22,163,74,.3);  color:var(--usd); }
-    .don-btn.usd-tl { background:rgba(22,163,74,.15);  border-color:rgba(22,163,74,.4);  color:var(--usd); }
-    .don-btn.tl-eur { background:rgba(37,99,235,.08);  border-color:rgba(37,99,235,.3);  color:var(--eur); }
-    .don-btn.eur-tl { background:rgba(37,99,235,.15);  border-color:rgba(37,99,235,.4);  color:var(--eur); }
+    .don-btn:active { transform:scale(.95); }
+    .don-btn.tl-usd { background:rgba(22,163,74,.08); border-color:rgba(22,163,74,.3); color:var(--usd); }
+    .don-btn.usd-tl { background:rgba(22,163,74,.15); border-color:rgba(22,163,74,.4); color:var(--usd); }
+    .don-btn.tl-eur { background:rgba(37,99,235,.08); border-color:rgba(37,99,235,.3); color:var(--eur); }
+    .don-btn.eur-tl { background:rgba(37,99,235,.15); border-color:rgba(37,99,235,.4); color:var(--eur); }
 
-    /* ── Altın Paneli ── */
-    .altin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.4rem; }
+    /* ── Altın ── */
+    .altin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.35rem; }
     .altin-kart {
       background:rgba(180,83,9,.06); border:1px solid rgba(180,83,9,.18);
-      border-radius:10px; padding:.5rem .65rem; cursor:pointer;
-      transition:all .15s;
+      border-radius:9px; padding:.4rem .5rem; cursor:pointer; transition:all .15s;
     }
-    .altin-kart:hover { background:rgba(180,83,9,.14); transform:translateY(-1px); }
-    .altin-kart:active { transform:scale(.96); }
-    .altin-isim  { font-size:.6rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--gold); font-family:'DM Mono',monospace; }
-    .altin-fiyat { font-size:1rem; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); margin-top:.15rem; }
-    .altin-alt   { font-size:.58rem; color:var(--muted); font-family:'DM Mono',monospace; }
+    .altin-kart:active { transform:scale(.96); background:rgba(180,83,9,.14); }
+    .altin-isim  { font-size:.55rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--gold); font-family:'DM Mono',monospace; }
+    .altin-fiyat { font-size:.88rem; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); margin-top:.1rem; line-height:1.2; }
+    .altin-alt   { font-size:.52rem; color:var(--muted); font-family:'DM Mono',monospace; }
 
-    .altin-don-butonlar { display:grid; grid-template-columns:repeat(3,1fr); gap:.35rem; margin-top:.4rem; }
+    .altin-don-butonlar { display:grid; grid-template-columns:repeat(3,1fr); gap:.3rem; margin-top:.4rem; }
     .altin-don-btn {
-      font-family:'DM Mono',monospace; font-size:.63rem; font-weight:600;
-      padding:.38rem .2rem; border-radius:8px; border:1.5px solid rgba(180,83,9,.25);
+      font-family:'DM Mono',monospace; font-size:.6rem; font-weight:600;
+      padding:.32rem .1rem; border-radius:7px; border:1.5px solid rgba(180,83,9,.25);
       background:rgba(180,83,9,.07); color:var(--gold);
       cursor:pointer; transition:all .15s; text-align:center;
     }
-    .altin-don-btn:hover { background:rgba(180,83,9,.18); transform:translateY(-1px); }
     .altin-don-btn:active { transform:scale(.96); }
 
-    /* ── Ekran ── */
-    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem; }
-    .header h1 { font-size:.88rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--accent); }
-    .mode-badge { font-family:'DM Mono',monospace; font-size:.63rem; padding:.2rem .6rem; background:rgba(124,58,237,.12); border:1px solid rgba(124,58,237,.25); border-radius:99px; color:var(--accent); }
+    /* ── Hesap Makinesi ── */
+    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
+    .header h1 { font-size:.82rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--accent); }
+    .mode-badge { font-family:'DM Mono',monospace; font-size:.6rem; padding:.18rem .55rem; background:rgba(124,58,237,.12); border:1px solid rgba(124,58,237,.25); border-radius:99px; color:var(--accent); }
 
     .display {
-      background:rgba(255,255,255,0.55); border:1px solid rgba(255,255,255,0.7);
-      border-radius:16px; padding:.85rem 1.1rem .95rem;
-      margin-bottom:.9rem; min-height:95px;
-      display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-end; gap:.22rem;
+      background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.75);
+      border-radius:14px; padding:.75rem 1rem .85rem;
+      margin-bottom:.75rem; min-height:85px;
+      display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-end; gap:.2rem;
+      overflow: hidden;
     }
-    .expr   { font-family:'DM Mono',monospace; font-size:.73rem; color:var(--muted); min-height:1.2em; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .result { font-family:'DM Mono',monospace; font-size:2.1rem; font-weight:500; color:var(--text); word-break:break-all; line-height:1.1; transition:color .2s; }
+    .expr   { font-family:'DM Mono',monospace; font-size:.68rem; color:var(--muted); min-height:1.1em; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .result {
+      font-family:'DM Mono',monospace; font-size:1.9rem; font-weight:500;
+      color:var(--text); word-break:break-all; line-height:1.1;
+      transition:color .2s; max-width:100%; text-align:right;
+    }
     .result.ok    { color:var(--green); }
-    .result.error { color:var(--red); font-size:.9rem; }
+    .result.error { color:var(--red); font-size:.85rem; }
     .result.doviz { color:#2563eb; }
     .result.gold  { color:var(--gold); }
 
     /* ── Bellek ── */
-    .mem-bar { display:flex; gap:.32rem; margin-bottom:.75rem; }
-    .mem-bar button { flex:1; font-family:'DM Mono',monospace; font-size:.66rem; padding:.3rem 0; border:1px solid rgba(124,58,237,.2); border-radius:7px; background:rgba(124,58,237,.07); color:var(--accent); cursor:pointer; transition:all .15s; }
-    .mem-bar button:hover { background:rgba(124,58,237,.18); transform:translateY(-1px); }
+    .mem-bar { display:flex; gap:.28rem; margin-bottom:.65rem; }
+    .mem-bar button {
+      flex:1; font-family:'DM Mono',monospace; font-size:.62rem;
+      padding:.28rem 0; border:1px solid rgba(124,58,237,.2);
+      border-radius:6px; background:rgba(124,58,237,.07); color:var(--accent);
+      cursor:pointer; transition:all .15s;
+    }
+    .mem-bar button:active { background:rgba(124,58,237,.2); }
 
     /* ── Tabs ── */
-    .tabs { display:flex; gap:.35rem; margin-bottom:.75rem; background:rgba(255,255,255,0.4); border:1px solid var(--border); border-radius:11px; padding:.22rem; }
-    .tab  { flex:1; padding:.38rem; border:none; background:transparent; color:var(--muted); font-family:'Outfit',sans-serif; font-size:.78rem; font-weight:700; border-radius:7px; cursor:pointer; transition:all .2s; }
-    .tab.active { background:white; color:var(--accent); box-shadow:0 2px 10px rgba(124,58,237,.2); }
+    .tabs { display:flex; gap:.3rem; margin-bottom:.65rem; background:rgba(255,255,255,0.4); border:1px solid var(--border); border-radius:10px; padding:.2rem; }
+    .tab  { flex:1; padding:.35rem; border:none; background:transparent; color:var(--muted); font-family:'Outfit',sans-serif; font-size:.75rem; font-weight:700; border-radius:7px; cursor:pointer; transition:all .2s; }
+    .tab.active { background:white; color:var(--accent); box-shadow:0 2px 8px rgba(124,58,237,.18); }
 
     /* ── Tuşlar ── */
     .panel-calc { display:none; }
     .panel-calc.active { display:grid; }
-    .grid-4 { grid-template-columns:repeat(4,1fr); gap:.42rem; }
-    .grid-5 { grid-template-columns:repeat(5,1fr); gap:.38rem; }
+    .grid-4 { grid-template-columns:repeat(4,1fr); gap:.38rem; }
+    .grid-5 { grid-template-columns:repeat(5,1fr); gap:.32rem; }
 
     button.key {
-      font-family:'DM Mono',monospace; font-size:.88rem; font-weight:500;
-      padding:.8rem .4rem; border:1.5px solid rgba(255,255,255,0.6);
-      border-radius:12px; background:rgba(255,255,255,0.55); color:var(--text);
-      cursor:pointer; transition:all .15s; box-shadow:0 2px 8px rgba(80,40,120,.06);
+      font-family:'DM Mono',monospace; font-size:.85rem; font-weight:500;
+      padding:.72rem .3rem; border:1.5px solid rgba(255,255,255,0.6);
+      border-radius:11px; background:rgba(255,255,255,0.6); color:var(--text);
+      cursor:pointer; transition:all .12s;
+      -webkit-tap-highlight-color: transparent;
     }
-    button.key:hover  { transform:translateY(-2px); box-shadow:0 6px 16px rgba(80,40,120,.14); }
-    button.key:active { transform:scale(.95); }
+    button.key:active { transform:scale(.93); }
     button.key.op  { background:rgba(124,58,237,.1); color:var(--accent); border-color:rgba(124,58,237,.25); }
-    button.key.eq  { background:linear-gradient(135deg,#7c3aed,#06b6d4); color:white; border-color:transparent; font-size:1.15rem; box-shadow:0 4px 18px rgba(124,58,237,.35); }
-    button.key.eq:hover { box-shadow:0 8px 28px rgba(124,58,237,.5); }
+    button.key.eq  { background:linear-gradient(135deg,#7c3aed,#06b6d4); color:white; border-color:transparent; font-size:1.1rem; }
     button.key.clr { background:rgba(220,38,38,.09); color:var(--red); border-color:rgba(220,38,38,.2); }
-    button.key.sci { background:rgba(6,182,212,.09); color:#0369a1; border-color:rgba(6,182,212,.25); font-size:.72rem; }
-    button.key.num0 { background:rgba(255,255,255,0.75); font-size:.98rem; font-weight:600; }
+    button.key.sci { background:rgba(6,182,212,.09); color:#0369a1; border-color:rgba(6,182,212,.25); font-size:.68rem; }
+    button.key.num0 { background:rgba(255,255,255,0.8); font-size:.92rem; font-weight:600; }
 
     /* ── Geçmiş ── */
-    .history { margin-top:.9rem; border-top:1px solid rgba(255,255,255,.5); padding-top:.7rem; }
-    .history-title { font-size:.6rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-family:'DM Mono',monospace; margin-bottom:.45rem; }
-    .history-list  { max-height:80px; overflow-y:auto; display:flex; flex-direction:column; gap:.22rem; }
-    .history-list::-webkit-scrollbar { width:3px; }
-    .history-list::-webkit-scrollbar-thumb { background:rgba(124,58,237,.3); border-radius:99px; }
-    .hist-item { font-family:'DM Mono',monospace; font-size:.7rem; color:var(--muted); padding:.26rem .5rem; background:rgba(255,255,255,.4); border-radius:7px; cursor:pointer; transition:all .15s; display:flex; justify-content:space-between; }
-    .hist-item:hover { background:rgba(255,255,255,.7); color:var(--text); }
+    .history { margin-top:.8rem; border-top:1px solid rgba(255,255,255,.5); padding-top:.6rem; }
+    .history-title { font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-family:'DM Mono',monospace; margin-bottom:.4rem; }
+    .history-list  { max-height:75px; overflow-y:auto; display:flex; flex-direction:column; gap:.2rem; }
+    .hist-item { font-family:'DM Mono',monospace; font-size:.67rem; color:var(--muted); padding:.24rem .45rem; background:rgba(255,255,255,.4); border-radius:6px; cursor:pointer; display:flex; justify-content:space-between; }
+    .hist-item:active { background:rgba(255,255,255,.7); }
     .hist-item .res { color:var(--green); font-weight:500; }
+
     @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
     .yukleniyor { animation:pulse 1.5s infinite; }
   </style>
@@ -199,7 +211,7 @@
 
   <div class="card">
 
-    <!-- ══ DÖVİZ PANELİ ══ -->
+    <!-- ══ DÖVİZ ══ -->
     <div class="panel-kart">
       <div class="panel-baslik">
         <span>📡 Canlı Döviz</span>
@@ -218,59 +230,55 @@
         </div>
       </div>
       <div class="donusum-butonlar">
-        <button class="don-btn tl-usd" onclick="dovizCevir('TL→USD')">TL → $</button>
-        <button class="don-btn usd-tl" onclick="dovizCevir('USD→TL')">$ → TL</button>
-        <button class="don-btn tl-eur" onclick="dovizCevir('TL→EUR')">TL → €</button>
-        <button class="don-btn eur-tl" onclick="dovizCevir('EUR→TL')">€ → TL</button>
+        <button class="don-btn tl-usd" onclick="dovizCevir('TL→USD')">TL→$</button>
+        <button class="don-btn usd-tl" onclick="dovizCevir('USD→TL')">$→TL</button>
+        <button class="don-btn tl-eur" onclick="dovizCevir('TL→EUR')">TL→€</button>
+        <button class="don-btn eur-tl" onclick="dovizCevir('EUR→TL')">€→TL</button>
       </div>
     </div>
 
-    <!-- ══ ALTIN PANELİ ══ -->
+    <!-- ══ ALTIN ══ -->
     <div class="panel-kart">
       <div class="panel-baslik">
-        <span>🥇 Canlı Altın (altinkaynak.com)</span>
+        <span>🥇 Altın (altinkaynak.com)</span>
         <button class="yenile-btn" onclick="altinGuncelle()">↻ Yenile</button>
       </div>
-
-      <!-- Fiyat Kartları — tıklayınca ekrana yazıyor -->
       <div class="altin-grid">
-        <div class="altin-kart" onclick="altinEkrana('gram24')" title="Ekrana yaz">
+        <div class="altin-kart" onclick="altinEkrana('gram24')">
           <div class="altin-isim">24 Ayar</div>
           <div class="altin-fiyat" id="ag24"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">gram / ₺</div>
+          <div class="altin-alt">gram/₺</div>
         </div>
-        <div class="altin-kart" onclick="altinEkrana('gram22')" title="Ekrana yaz">
+        <div class="altin-kart" onclick="altinEkrana('gram22')">
           <div class="altin-isim">22 Ayar</div>
           <div class="altin-fiyat" id="ag22"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">gram / ₺</div>
+          <div class="altin-alt">gram/₺</div>
         </div>
-        <div class="altin-kart" onclick="altinEkrana('ceyrek')" title="Ekrana yaz">
+        <div class="altin-kart" onclick="altinEkrana('ceyrek')">
           <div class="altin-isim">Çeyrek</div>
           <div class="altin-fiyat" id="agCeyrek"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">adet / ₺</div>
+          <div class="altin-alt">adet/₺</div>
         </div>
-        <div class="altin-kart" onclick="altinEkrana('yarim')" title="Ekrana yaz">
+        <div class="altin-kart" onclick="altinEkrana('yarim')">
           <div class="altin-isim">Yarım</div>
           <div class="altin-fiyat" id="agYarim"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">adet / ₺</div>
+          <div class="altin-alt">adet/₺</div>
         </div>
-        <div class="altin-kart" onclick="altinEkrana('cumhuriyet')" title="Ekrana yaz">
+        <div class="altin-kart" onclick="altinEkrana('cumhuriyet')">
           <div class="altin-isim">Cumhuriyet</div>
           <div class="altin-fiyat" id="agCum"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">adet / ₺</div>
+          <div class="altin-alt">adet/₺</div>
         </div>
-        <div class="altin-kart" onclick="altinEkrana('gram18')" title="Ekrana yaz">
+        <div class="altin-kart" onclick="altinEkrana('gram18')">
           <div class="altin-isim">18 Ayar</div>
           <div class="altin-fiyat" id="ag18"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">gram / ₺</div>
+          <div class="altin-alt">gram/₺</div>
         </div>
       </div>
-
-      <!-- TL ↔ Gram dönüşüm -->
       <div class="altin-don-butonlar">
-        <button class="altin-don-btn" onclick="altinCevir('TL→gr24')">TL → gr(24)</button>
-        <button class="altin-don-btn" onclick="altinCevir('TL→gr22')">TL → gr(22)</button>
-        <button class="altin-don-btn" onclick="altinCevir('gr24→TL')">gr(24) → TL</button>
+        <button class="altin-don-btn" onclick="altinCevir('TL→gr24')">TL→gr(24)</button>
+        <button class="altin-don-btn" onclick="altinCevir('TL→gr22')">TL→gr(22)</button>
+        <button class="altin-don-btn" onclick="altinCevir('gr24→TL')">gr(24)→TL</button>
       </div>
       <div class="altin-alt" id="altinKaynak" style="text-align:right;margin-top:.3rem;"></div>
     </div>
@@ -299,7 +307,6 @@
       <button class="tab"        onclick="switchTab('bilim',this)">Bilimsel</button>
     </div>
 
-    <!-- TEMEL -->
     <div class="panel-calc active grid-4" id="panel-temel">
       <button class="key clr" onclick="temizle()" style="grid-column:span 2">AC</button>
       <button class="key op"  onclick="sil()">⌫</button>
@@ -327,7 +334,6 @@
       <button class="key eq"   onclick="hesapla()" style="grid-column:span 4">=</button>
     </div>
 
-    <!-- BİLİMSEL -->
     <div class="panel-calc grid-5" id="panel-bilim">
       <button class="key sci" onclick="sciHesapla('karekök')">√x</button>
       <button class="key sci" onclick="sciHesapla('kare')">x²</button>
@@ -368,140 +374,172 @@
   </div>
 
 <script>
-// ── Durum ──────────────────────────────────────────────────────
-let goster="0", tampon=null, mevcutOp=null, opSembol="", yeniGiris=true, bellek=0;
-let aktifKurlar = { USD:null, EUR:null };
-let aktifAltin  = {};
+// ── Durum ─────────────────────────────────────────────────────
+let gosterHam = "0";   // Ham sayı (hesaplama için)
+let tampon=null, mevcutOp=null, opSembol="", yeniGiris=true, bellek=0;
+let aktifKurlar={USD:null,EUR:null};
+let aktifAltin={};
 
 const resultEl = document.getElementById("result");
 const exprEl   = document.getElementById("expr");
 
-function guncelle(cls="") {
-  resultEl.textContent = goster;
-  resultEl.className   = "result" + (cls?" "+cls:"");
+// ── Basamak Ayırıcı ───────────────────────────────────────────
+function formatliGoster(ham) {
+  if (ham === "" || ham === "-") return ham;
+  const eksiIsareti = ham.startsWith("-") ? "-" : "";
+  const pozitif = ham.replace("-","");
+  const parcalar = pozitif.split(".");
+  const tamKisim = parcalar[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return eksiIsareti + tamKisim + (parcalar[1] !== undefined ? "," + parcalar[1] : "");
 }
 
-// ── Döviz ──────────────────────────────────────────────────────
+function guncelle(cls="") {
+  resultEl.textContent = formatliGoster(gosterHam);
+  resultEl.className   = "result" + (cls?" "+cls:"");
+  // Font küçültme — uzun sayılarda
+  const len = resultEl.textContent.length;
+  resultEl.style.fontSize = len > 14 ? "1.2rem" : len > 10 ? "1.5rem" : "1.9rem";
+}
+
+// ── Döviz ─────────────────────────────────────────────────────
 async function kurlariGuncelle() {
   try {
     const k = await fetch("/api/kur").then(r=>r.json());
     if (!k.USD) return;
     aktifKurlar = k;
-    document.getElementById("usdDeger").textContent = k.USD.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
-    document.getElementById("eurDeger").textContent = k.EUR.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
-    document.getElementById("usdTarih").textContent = k.tarih + " · " + (k.kaynak||"");
-    document.getElementById("eurTarih").textContent = k.tarih + " · " + (k.kaynak||"");
-  } catch(e) {
-    document.getElementById("usdTarih").textContent="Hata";
-    document.getElementById("eurTarih").textContent="Hata";
-  }
+    document.getElementById("usdDeger").textContent =
+      k.USD.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+    document.getElementById("eurDeger").textContent =
+      k.EUR.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+    document.getElementById("usdTarih").textContent = k.tarih+" · "+(k.kaynak||"");
+    document.getElementById("eurTarih").textContent = k.tarih+" · "+(k.kaynak||"");
+  } catch(e) {}
 }
 
 function dovizCevir(yon) {
-  const deger = parseFloat(goster); if(isNaN(deger)) return;
+  const deger = parseFloat(gosterHam); if(isNaN(deger)) return;
   let sonuc, ifade;
-  if      (yon==="TL→USD") { if(!aktifKurlar.USD) return; sonuc=deger/aktifKurlar.USD; ifade=`${deger.toLocaleString("tr-TR")} ₺ → $`; }
-  else if (yon==="USD→TL") { if(!aktifKurlar.USD) return; sonuc=deger*aktifKurlar.USD; ifade=`$${deger.toLocaleString("tr-TR")} → ₺`; }
-  else if (yon==="TL→EUR") { if(!aktifKurlar.EUR) return; sonuc=deger/aktifKurlar.EUR; ifade=`${deger.toLocaleString("tr-TR")} ₺ → €`; }
-  else if (yon==="EUR→TL") { if(!aktifKurlar.EUR) return; sonuc=deger*aktifKurlar.EUR; ifade=`€${deger.toLocaleString("tr-TR")} → ₺`; }
+  if      (yon==="TL→USD"){if(!aktifKurlar.USD)return;sonuc=deger/aktifKurlar.USD;ifade=`${formatliGoster(gosterHam)} ₺ → $`;}
+  else if (yon==="USD→TL"){if(!aktifKurlar.USD)return;sonuc=deger*aktifKurlar.USD;ifade=`$${formatliGoster(gosterHam)} → ₺`;}
+  else if (yon==="TL→EUR"){if(!aktifKurlar.EUR)return;sonuc=deger/aktifKurlar.EUR;ifade=`${formatliGoster(gosterHam)} ₺ → €`;}
+  else if (yon==="EUR→TL"){if(!aktifKurlar.EUR)return;sonuc=deger*aktifKurlar.EUR;ifade=`€${formatliGoster(gosterHam)} → ₺`;}
   sonuc=Math.round(sonuc*100)/100;
-  exprEl.textContent=ifade; goster=String(sonuc);
-  resultEl.textContent=goster; resultEl.className="result doviz";
-  histEkle(ifade,sonuc); yeniGiris=true;
+  exprEl.textContent=ifade;
+  gosterHam=String(sonuc);
+  guncelle("doviz");
+  histEkle(ifade,sonuc);
+  yeniGiris=true;
 }
 
-// ── Altın ──────────────────────────────────────────────────────
+// ── Altın ─────────────────────────────────────────────────────
 function fiyatGoster(id, deger) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = deger ? deger.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) : "—";
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.textContent=deger
+    ? deger.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})
+    : "—";
 }
 
 async function altinGuncelle() {
   try {
-    const d = await fetch("/api/altin").then(r=>r.json());
-    if (d.hata) { document.getElementById("altinKaynak").textContent = d.hata; return; }
-    aktifAltin = d;
-    fiyatGoster("ag24",     d.gram24);
-    fiyatGoster("ag22",     d.gram22);
-    fiyatGoster("agCeyrek", d.ceyrek);
-    fiyatGoster("agYarim",  d.yarim);
-    fiyatGoster("agCum",    d.cumhuriyet);
-    fiyatGoster("ag18",     d.gram18);
-    document.getElementById("altinKaynak").textContent = (d.tarih||"") + " · " + (d.kaynak||"");
-  } catch(e) {
-    document.getElementById("altinKaynak").textContent = "Veri alınamadı";
-  }
+    const d=await fetch("/api/altin").then(r=>r.json());
+    if(d.hata){document.getElementById("altinKaynak").textContent=d.hata;return;}
+    aktifAltin=d;
+    fiyatGoster("ag24",d.gram24);
+    fiyatGoster("ag22",d.gram22);
+    fiyatGoster("agCeyrek",d.ceyrek);
+    fiyatGoster("agYarim",d.yarim);
+    fiyatGoster("agCum",d.cumhuriyet);
+    fiyatGoster("ag18",d.gram18);
+    document.getElementById("altinKaynak").textContent=(d.tarih||"")+" · "+(d.kaynak||"");
+  } catch(e){}
 }
 
-// Altın kartına tıklayınca fiyatı ekrana yaz
 function altinEkrana(tur) {
-  const fiyat = aktifAltin[tur];
-  if (!fiyat) return;
-  goster = String(fiyat);
-  const isimler = { gram24:"24 Ayar Gram",gram22:"22 Ayar Gram",gram18:"18 Ayar Gram",ceyrek:"Çeyrek Altın",yarim:"Yarım Altın",cumhuriyet:"Cumhuriyet Altını" };
-  exprEl.textContent = isimler[tur] || tur;
-  resultEl.textContent = goster;
-  resultEl.className = "result gold";
-  yeniGiris = true;
+  const fiyat=aktifAltin[tur]; if(!fiyat) return;
+  gosterHam=String(fiyat);
+  const isimler={gram24:"24 Ayar Gram",gram22:"22 Ayar Gram",gram18:"18 Ayar Gram",ceyrek:"Çeyrek",yarim:"Yarım",cumhuriyet:"Cumhuriyet"};
+  exprEl.textContent=isimler[tur]||tur;
+  guncelle("gold");
+  yeniGiris=true;
 }
 
-// TL ↔ Gram dönüşüm
 function altinCevir(yon) {
-  const deger = parseFloat(goster); if(isNaN(deger)) return;
-  let sonuc, ifade;
-  if      (yon==="TL→gr24") { if(!aktifAltin.gram24) return; sonuc=deger/aktifAltin.gram24; ifade=`${deger.toLocaleString("tr-TR")} ₺ → gram(24)`; }
-  else if (yon==="TL→gr22") { if(!aktifAltin.gram22) return; sonuc=deger/aktifAltin.gram22; ifade=`${deger.toLocaleString("tr-TR")} ₺ → gram(22)`; }
-  else if (yon==="gr24→TL") { if(!aktifAltin.gram24) return; sonuc=deger*aktifAltin.gram24; ifade=`${deger} gram(24) → ₺`; }
+  const deger=parseFloat(gosterHam); if(isNaN(deger)) return;
+  let sonuc,ifade;
+  if      (yon==="TL→gr24"){if(!aktifAltin.gram24)return;sonuc=deger/aktifAltin.gram24;ifade=`${formatliGoster(gosterHam)} ₺ → gr(24)`;}
+  else if (yon==="TL→gr22"){if(!aktifAltin.gram22)return;sonuc=deger/aktifAltin.gram22;ifade=`${formatliGoster(gosterHam)} ₺ → gr(22)`;}
+  else if (yon==="gr24→TL"){if(!aktifAltin.gram24)return;sonuc=deger*aktifAltin.gram24;ifade=`${gosterHam} gr(24) → ₺`;}
   sonuc=Math.round(sonuc*1000)/1000;
-  exprEl.textContent=ifade; goster=String(sonuc);
-  resultEl.textContent=goster; resultEl.className="result gold";
-  histEkle(ifade,sonuc); yeniGiris=true;
+  exprEl.textContent=ifade;
+  gosterHam=String(sonuc);
+  guncelle("gold");
+  histEkle(ifade,sonuc);
+  yeniGiris=true;
 }
 
-// ── Hesap Makinesi ─────────────────────────────────────────────
+// ── Hesap Makinesi ────────────────────────────────────────────
 function append(k) {
-  if(yeniGiris){goster="";yeniGiris=false;}
-  if(k==="."&&goster.includes(".")) return;
-  if((goster==="0"||goster==="")&&k!=="."&&k!=="("&&k!==")") goster=k; else goster+=k;
+  if(yeniGiris){gosterHam="";yeniGiris=false;}
+  if(k==="."&&gosterHam.includes(".")) return;
+  if((gosterHam==="0"||gosterHam==="")&&k!=="."&&k!=="("&&k!==")") gosterHam=k;
+  else gosterHam+=k;
   guncelle();
 }
-function appendConst(val,label){goster=String(val);exprEl.textContent=label;guncelle();}
-function toggleSign(){if(goster.startsWith("-"))goster=goster.slice(1);else if(goster!=="0")goster="-"+goster;guncelle();}
-function sil(){goster=goster.length>1?goster.slice(0,-1):"0";guncelle();}
-function temizle(){goster="0";tampon=null;mevcutOp=null;opSembol="";exprEl.textContent="";guncelle();}
-function setOp(op,sembol){tampon=parseFloat(goster);mevcutOp=op;opSembol=sembol;exprEl.textContent=`${tampon} ${sembol}`;yeniGiris=true;}
+function appendConst(val,label){gosterHam=String(val);exprEl.textContent=label;guncelle();}
+function toggleSign(){
+  if(gosterHam.startsWith("-"))gosterHam=gosterHam.slice(1);
+  else if(gosterHam!=="0")gosterHam="-"+gosterHam;
+  guncelle();
+}
+function sil(){gosterHam=gosterHam.length>1?gosterHam.slice(0,-1):"0";guncelle();}
+function temizle(){gosterHam="0";tampon=null;mevcutOp=null;opSembol="";exprEl.textContent="";guncelle();}
+function setOp(op,sembol){
+  tampon=parseFloat(gosterHam);mevcutOp=op;opSembol=sembol;
+  exprEl.textContent=`${formatliGoster(gosterHam)} ${sembol}`;
+  yeniGiris=true;
+}
 
 async function hesapla(){
   if(!mevcutOp) return;
-  const b=parseFloat(goster);
-  exprEl.textContent=`${tampon} ${opSembol} ${b} =`;
+  const b=parseFloat(gosterHam);
+  exprEl.textContent=`${formatliGoster(String(tampon))} ${opSembol} ${formatliGoster(gosterHam)} =`;
   await apiHesapla({islem:mevcutOp,a:tampon,b},`${tampon} ${opSembol} ${b}`);
   mevcutOp=null;
 }
-async function sciHesapla(op){const a=parseFloat(goster);exprEl.textContent=`${op}(${a}) =`;await apiHesapla({islem:op,a},`${op}(${a})`);}
+async function sciHesapla(op){
+  const a=parseFloat(gosterHam);
+  exprEl.textContent=`${op}(${formatliGoster(gosterHam)}) =`;
+  await apiHesapla({islem:op,a},`${op}(${a})`);
+}
 async function apiHesapla(payload,ifade){
   try{
     const res=await fetch("/hesapla",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
     const data=await res.json();
-    if(data.hata){goster=data.hata;guncelle("error");}
-    else{goster=String(data.sonuc);guncelle("ok");histEkle(ifade,data.sonuc);setTimeout(()=>resultEl.classList.remove("ok"),700);}
-  }catch(e){goster="Bağlantı hatası";guncelle("error");}
+    if(data.hata){gosterHam=data.hata;resultEl.textContent=data.hata;resultEl.className="result error";}
+    else{
+      gosterHam=String(data.sonuc);
+      guncelle("ok");
+      histEkle(ifade,data.sonuc);
+      setTimeout(()=>resultEl.classList.remove("ok"),700);
+    }
+  }catch(e){gosterHam="Hata";resultEl.textContent="Hata";resultEl.className="result error";}
   yeniGiris=true;
 }
 
-function memStore() {bellek=parseFloat(goster);exprEl.textContent=`MS → ${bellek}`;}
-function memRecall(){goster=String(bellek);guncelle();}
+function memStore() {bellek=parseFloat(gosterHam);exprEl.textContent=`MS → ${formatliGoster(gosterHam)}`;}
+function memRecall(){gosterHam=String(bellek);guncelle();}
 function memClear() {bellek=0;exprEl.textContent="Bellek temizlendi";}
-function memAdd()   {bellek+=parseFloat(goster);exprEl.textContent=`M = ${bellek}`;}
-function memSub()   {bellek-=parseFloat(goster);exprEl.textContent=`M = ${bellek}`;}
+function memAdd()   {bellek+=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
+function memSub()   {bellek-=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
 
 function histEkle(ifade,sonuc){
   const list=document.getElementById("histList");
   const div=document.createElement("div");
   div.className="hist-item";
-  div.innerHTML=`<span>${ifade}</span><span class="res">${sonuc}</span>`;
-  div.onclick=()=>{goster=String(sonuc);guncelle();};
+  const gorSonuc=typeof sonuc==="number"?sonuc.toLocaleString("tr-TR",{maximumFractionDigits:4}):sonuc;
+  div.innerHTML=`<span>${ifade}</span><span class="res">${gorSonuc}</span>`;
+  div.onclick=()=>{gosterHam=String(sonuc);guncelle();};
   list.prepend(div);
   if(list.children.length>10) list.lastChild.remove();
 }
@@ -515,24 +553,25 @@ function switchTab(id,btn){
   document.getElementById("modeBadge").textContent=id==="temel"?"Temel":"Bilimsel";
 }
 
+// Klavye (masaüstü için)
 document.addEventListener("keydown",e=>{
-  if("0123456789".includes(e.key)) append(e.key);
-  else if(e.key===".") append(".");
-  else if(e.key==="Backspace") sil();
-  else if(e.key==="Escape") temizle();
-  else if(e.key==="Enter"||e.key==="=") hesapla();
-  else if(e.key==="+") setOp("toplama","+");
-  else if(e.key==="-") setOp("cikarma","−");
-  else if(e.key==="*") setOp("carpma","×");
+  if("0123456789".includes(e.key))append(e.key);
+  else if(e.key===".")append(".");
+  else if(e.key===",")append(".");
+  else if(e.key==="Backspace")sil();
+  else if(e.key==="Escape")temizle();
+  else if(e.key==="Enter"||e.key==="=")hesapla();
+  else if(e.key==="+")setOp("toplama","+");
+  else if(e.key==="-")setOp("cikarma","−");
+  else if(e.key==="*")setOp("carpma","×");
   else if(e.key==="/"){e.preventDefault();setOp("bolme","÷");}
-  else if(e.key==="%") setOp("mod","%");
+  else if(e.key==="%")setOp("mod","%");
 });
 
-// ── Başlat ─────────────────────────────────────────────────────
 kurlariGuncelle();
 altinGuncelle();
-setInterval(kurlariGuncelle, 60000);
-setInterval(altinGuncelle,   120000);
+setInterval(kurlariGuncelle,60000);
+setInterval(altinGuncelle,120000);
 </script>
 </body>
 </html>
