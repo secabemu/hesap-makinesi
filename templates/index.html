@@ -173,20 +173,42 @@
     .altin-alt { font-size: calc(var(--s)*.52); color: var(--soluk); }
 
     .altin-butonlar {
-      display: grid; grid-template-columns: repeat(4,1fr);
-      gap: calc(var(--s)*.3); margin-top: calc(var(--s)*.5);
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: calc(var(--s)*.5); margin-top: calc(var(--s)*.6);
+    }
+    .don-grup {
+      display: flex; flex-direction: column; gap: calc(var(--s)*.3);
+      background: #FFFBEB; border-radius: calc(var(--s)*.75);
+      padding: calc(var(--s)*.55) calc(var(--s)*.6);
+      border: 1.5px solid #FDE68A;
+    }
+    .don-grup-baslik {
+      font-size: calc(var(--s)*.62); font-weight: 800;
+      color: #92400E; text-transform: uppercase; letter-spacing: 1px;
+      text-align: center; padding-bottom: calc(var(--s)*.3);
+      border-bottom: 1px solid #FDE68A;
     }
     .a-btn {
-      font-size: calc(var(--s)*.6); font-weight: 600;
-      padding: calc(var(--s)*.32) calc(var(--s)*.1);
-      border-radius: calc(var(--s)*.5);
-      border: 1.5px solid #FDE68A;
-      background: #FFFBEB; color: #92400E;
-      cursor: pointer; text-align: center; transition: all .12s;
-      font-family: 'Inter', sans-serif;
+      font-size: calc(var(--s)*.78); font-weight: 700;
+      padding: calc(var(--s)*.5) calc(var(--s)*.3);
+      border-radius: calc(var(--s)*.55);
+      border: none; cursor: pointer; text-align: center;
+      transition: all .12s; font-family: 'Inter', sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    .a-btn:active { background: #FEF3C7; transform: scale(.93); }
+    .a-btn:active { transform: scale(.93); }
+    .a-btn-24 {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: white;
+      box-shadow: 0 2px 8px rgba(217,119,6,.3);
+    }
+    .a-btn-24:active { background: linear-gradient(135deg, #D97706, #B45309); }
+    .a-btn-22 {
+      background: linear-gradient(135deg, #0066CC, #003087);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0,102,204,.3);
+    }
+    .a-btn-22:active { background: linear-gradient(135deg, #003087, #001A4D); }
 
     /* ── Ekran ── */
     .ekran-alani {
@@ -198,11 +220,18 @@
     }
     .ekran-ust {
       background: linear-gradient(135deg, var(--lacivert), var(--mavi));
-      padding: calc(var(--s)*.5) calc(var(--s)*1);
+      padding: calc(var(--s)*.75) calc(var(--s)*1.2) calc(var(--s)*.65);
       display: flex; justify-content: space-between; align-items: center;
     }
-    .ekran-etiket { font-size: calc(var(--s)*.62); color: rgba(255,255,255,.7); font-weight: 500; }
-    .ekran-expr   { font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.72); color: rgba(255,255,255,.85); }
+    .app-logo { display:flex; align-items:center; gap:calc(var(--s)*.5); }
+    .app-logo .ikon {
+      width:calc(var(--s)*2.2); height:calc(var(--s)*2.2);
+      background:var(--turuncu); border-radius:calc(var(--s)*.45);
+      display:flex; align-items:center; justify-content:center;
+      font-size:calc(var(--s)*1.1); font-weight:800; color:white;
+    }
+    .app-logo span { font-size:calc(var(--s)*.88); font-weight:700; color:white; letter-spacing:.5px; }
+    .ekran-expr { font-family:'DM Mono',monospace; font-size:calc(var(--s)*.72); color:rgba(255,255,255,.85); }
 
     .ekran-deger {
       padding: calc(var(--s)*.6) calc(var(--s)*1) calc(var(--s)*.8);
@@ -310,7 +339,7 @@
     .modal-arka.acik {
       display: block;
       background: rgba(0,30,80,.45);
-      backdrop-filter: blur(4px);
+      /* backdrop-filter kaldırıldı */
     }
     .modal-icerik {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -372,18 +401,6 @@
 <body>
 <div class="kart">
 
-  <!-- ══ HEADER ══ -->
-  <div class="app-header">
-    <div class="app-logo">
-      <div class="ikon">₺</div>
-      <span>Hesap Makinesi</span>
-    </div>
-    <div class="app-header-btn">
-      <button class="hdr-btn esit"    onclick="hesapla()"  title="Hesapla">=</button>
-      <button class="hdr-btn sifirla" onclick="temizle()"  title="Sıfırla">↺</button>
-    </div>
-  </div>
-
   <!-- ══ DÖVİZ ══ -->
   <div class="panel">
     <div class="panel-baslik">
@@ -437,17 +454,19 @@
         <div class="altin-fiyat" id="agYarim"><span class="yukleniyor">—</span></div>
         <div class="altin-alt">₺ / adet</div>
       </div>
-      <div class="altin-kart" onclick="altinEkrana('cumhuriyet')" style="grid-column:span 2;">
-        <div class="altin-isim">Cumhuriyet Altını</div>
-        <div class="altin-fiyat" id="agCum"><span class="yukleniyor">—</span></div>
-        <div class="altin-alt">₺ / adet</div>
-      </div>
+
     </div>
     <div class="altin-butonlar">
-      <button class="a-btn" onclick="altinCevir('TL→gr24')">TL→gr(24)</button>
-      <button class="a-btn" onclick="altinCevir('gr24→TL')">gr(24)→TL</button>
-      <button class="a-btn" onclick="altinCevir('TL→gr22')">TL→gr(22)</button>
-      <button class="a-btn" onclick="altinCevir('gr22→TL')">gr(22)→TL</button>
+      <div class="don-grup">
+        <div class="don-grup-baslik">24 Ayar</div>
+        <button class="a-btn a-btn-24" onclick="altinCevir('TL→gr24')">₺ → gram</button>
+        <button class="a-btn a-btn-24" onclick="altinCevir('gr24→TL')">gram → ₺</button>
+      </div>
+      <div class="don-grup">
+        <div class="don-grup-baslik">22 Ayar</div>
+        <button class="a-btn a-btn-22" onclick="altinCevir('TL→gr22')">₺ → gram</button>
+        <button class="a-btn a-btn-22" onclick="altinCevir('gr22→TL')">gram → ₺</button>
+      </div>
     </div>
     <div class="kur-alt" id="altinKaynak" style="text-align:right;margin-top:.4rem;"></div>
   </div>
@@ -455,10 +474,20 @@
   <!-- ══ HESAP MAKİNESİ EKRANI ══ -->
   <div class="ekran-alani">
 
-    <!-- Üst bilgi -->
+    <!-- Üst bilgi / Header -->
     <div class="ekran-ust">
-      <span class="ekran-etiket" id="ekranEtiket">Temel Mod</span>
-      <span class="ekran-expr"   id="expr"></span>
+      <div class="app-logo">
+        <div class="ikon">₺</div>
+        <span>Hesap Makinesi</span>
+      </div>
+      <div style="display:flex;gap:calc(var(--s)*.4);align-items:center;">
+        <button class="hdr-btn esit"    onclick="hesapla()"  title="Hesapla">=</button>
+        <button class="hdr-btn sifirla" onclick="temizle()"  title="Sıfırla">↺</button>
+      </div>
+    </div>
+    <!-- İfade satırı -->
+    <div style="background:linear-gradient(135deg,var(--lacivert),var(--mavi));padding:0 calc(var(--s)*1.2) calc(var(--s)*.5);display:flex;justify-content:flex-end;">
+      <span class="ekran-expr" id="expr"></span>
     </div>
 
     <!-- Tıklanabilir ekran -->
@@ -749,7 +778,7 @@ async function altinGuncelle(){
     if(d.hata){document.getElementById("altinKaynak").textContent=d.hata;return;}
     aktifAltin=d;
     fp("ag24",d.gram24); fp("ag22",d.gram22);
-    fp("agCeyrek",d.ceyrek); fp("agYarim",d.yarim); fp("agCum",d.cumhuriyet);
+    fp("agCeyrek",d.ceyrek); fp("agYarim",d.yarim); 
     document.getElementById("altinKaynak").textContent=(d.tarih||"")+" · "+(d.kaynak||"");
   }catch(e){}
 }
