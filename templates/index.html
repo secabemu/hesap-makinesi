@@ -4,630 +4,779 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Hesap Makinesi</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
-    /*
-      Responsive strateji:
-      - clamp(min, tercih, max) → küçük ekranda min, büyük ekranda max
-      - vw (viewport width) → ekran genişliğine göre orantılı boyut
-      - Kart maks 480px, ortada, mobilde tam genişlik
-    */
-
     :root {
-      --glass:  rgba(255,255,255,0.18);
-      --border: rgba(255,255,255,0.3);
-      --shadow: rgba(80,40,120,0.18);
-      --text:   #1a0a2e;
-      --muted:  rgba(30,10,60,0.55);
-      --accent: #7c3aed;
-      --green:  #059669;
-      --red:    #dc2626;
-      --usd:    #16a34a;
-      --eur:    #2563eb;
-      --gold:   #b45309;
-
-      /* Temel ölçek birimi — tüm boyutlar buradan türer */
-      --s: clamp(12px, 3.2vw, 16px);
+      --turuncu:   #F7941D;
+      --turuncu-k: #E07810;
+      --lacivert:  #003087;
+      --lacivert-k:#002060;
+      --mavi:      #0066CC;
+      --yesil:     #00A651;
+      --bg:        #F2F4F8;
+      --kart:      #FFFFFF;
+      --sinir:     #E0E6F0;
+      --metin:     #1A2340;
+      --soluk:     #6B7A99;
+      --s: clamp(12px, 3.2vw, 15px);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
 
     body {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: var(--s);
       min-height: 100vh;
+      background: var(--bg);
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: calc(var(--s) * .8) calc(var(--s) * .6) calc(var(--s) * 2);
-      background: #e8d5ff;
+      padding: calc(var(--s)*.8) calc(var(--s)*.6) calc(var(--s)*2);
     }
 
-    body::before {
-      content: '';
-      position: fixed; inset: -50%;
-      background: conic-gradient(from 0deg at 30% 40%, #c084fc,#818cf8,#67e8f9,#34d399,#fbbf24,#f472b6,#c084fc);
-      animation: spin 18s linear infinite;
-      opacity: .5; filter: blur(60px); pointer-events: none;
+    /* ── Ana Kart ── */
+    .kart {
+      width: 100%; max-width: 460px;
+      display: flex; flex-direction: column; gap: calc(var(--s)*.65);
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .blob { position:fixed; border-radius:50%; filter:blur(40px); opacity:.35; animation:float 8s ease-in-out infinite; }
-    .blob1 { width:40vw;height:40vw;max-width:220px;max-height:220px;background:#a78bfa;top:-10vw;left:-10vw; }
-    .blob2 { width:32vw;height:32vw;max-width:180px;max-height:180px;background:#67e8f9;bottom:-8vw;right:-8vw;animation-delay:-3s; }
-    .blob3 { width:28vw;height:28vw;max-width:160px;max-height:160px;background:#fbbf24;top:50%;left:70%;animation-delay:-5s; }
-    @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(10px,-14px);}}
-
-    /* ── Kart ── */
-    .card {
-      position: relative; z-index: 10;
-      width: 100%; max-width: 480px;
-      background: var(--glass);
-      backdrop-filter: blur(28px) saturate(1.8);
-      -webkit-backdrop-filter: blur(28px) saturate(1.8);
-      border: 1.5px solid var(--border);
-      border-radius: calc(var(--s) * 1.6);
-      padding: calc(var(--s) * .9) calc(var(--s) * .9) calc(var(--s) * 1.2);
-      box-shadow: 0 8px 40px var(--shadow), 0 1.5px 0 rgba(255,255,255,.6) inset;
-      animation: slideUp .4s cubic-bezier(.22,1,.36,1);
+    /* ── Üst Header ── */
+    .app-header {
+      background: linear-gradient(135deg, var(--lacivert), var(--mavi));
+      border-radius: calc(var(--s)*1.2);
+      padding: calc(var(--s)*1) calc(var(--s)*1.2);
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0,48,135,.25);
     }
-    @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .app-logo {
+      display: flex; align-items: center; gap: calc(var(--s)*.5);
+    }
+    .app-logo .ikon {
+      width: calc(var(--s)*2.4); height: calc(var(--s)*2.4);
+      background: var(--turuncu);
+      border-radius: calc(var(--s)*.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: calc(var(--s)*1.2); font-weight: 800; color: white;
+    }
+    .app-logo span {
+      font-size: calc(var(--s)*.9); font-weight: 700;
+      color: white; letter-spacing: .5px;
+    }
+    .app-header-btn {
+      display: flex; gap: calc(var(--s)*.4);
+    }
+    .hdr-btn {
+      border: none; border-radius: 99px; cursor: pointer;
+      font-family: 'DM Mono', monospace; font-weight: 700;
+      transition: all .15s; -webkit-tap-highlight-color: transparent;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hdr-btn.esit {
+      background: var(--turuncu);
+      color: white;
+      font-size: calc(var(--s)*1.1);
+      padding: calc(var(--s)*.3) calc(var(--s)*1);
+      box-shadow: 0 3px 10px rgba(247,148,29,.4);
+      min-width: calc(var(--s)*3);
+    }
+    .hdr-btn.esit:active { background: var(--turuncu-k); transform: scale(.93); }
+    .hdr-btn.sifirla {
+      background: rgba(255,255,255,.18);
+      color: white;
+      font-size: calc(var(--s)*1.1);
+      padding: calc(var(--s)*.3) calc(var(--s)*1);
+      border: 1.5px solid rgba(255,255,255,.35);
+      min-width: calc(var(--s)*3);
+    }
+    .hdr-btn.sifirla:active { background: rgba(255,255,255,.3); transform: scale(.93); }
 
-    /* ── Panel ortak ── */
-    .panel-kart {
-      background: rgba(255,255,255,0.5);
-      border: 1px solid rgba(255,255,255,0.7);
-      border-radius: calc(var(--s) * .85);
-      padding: calc(var(--s) * .55) calc(var(--s) * .7);
-      margin-bottom: calc(var(--s) * .6);
+    /* ── Panel Ortak ── */
+    .panel {
+      background: var(--kart);
+      border: 1px solid var(--sinir);
+      border-radius: calc(var(--s)*1);
+      padding: calc(var(--s)*.7) calc(var(--s)*.85);
+      box-shadow: 0 2px 12px rgba(0,48,135,.06);
     }
     .panel-baslik {
-      display:flex; justify-content:space-between; align-items:center;
-      margin-bottom: calc(var(--s) * .4);
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: calc(var(--s)*.5);
+      padding-bottom: calc(var(--s)*.45);
+      border-bottom: 1px solid var(--sinir);
     }
     .panel-baslik span {
-      font-size: calc(var(--s) * .62); font-weight:700; letter-spacing:1.6px;
-      text-transform:uppercase; color:var(--muted); font-family:'DM Mono',monospace;
+      font-size: calc(var(--s)*.68); font-weight: 700;
+      color: var(--lacivert); letter-spacing: .5px; text-transform: uppercase;
     }
     .yenile-btn {
-      font-size: calc(var(--s) * .6); color:var(--muted); font-family:'DM Mono',monospace;
-      cursor:pointer; border:none; background:none;
-      padding: .15rem .4rem; border-radius:99px; transition:background .15s;
-      -webkit-tap-highlight-color:transparent;
+      font-size: calc(var(--s)*.75); color: var(--turuncu);
+      border: 1px solid var(--turuncu); background: none;
+      padding: .15rem .5rem; border-radius: 99px; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      transition: all .15s; -webkit-tap-highlight-color: transparent;
     }
-    .yenile-btn:active { background:rgba(124,58,237,.1); }
+    .yenile-btn:active { background: var(--turuncu); color: white; }
 
     /* ── Döviz ── */
-    .doviz-satirlar { display:grid; grid-template-columns:1fr 1fr; gap:calc(var(--s) * .35); }
-    .kur-kart { border-radius:calc(var(--s) * .65); padding:calc(var(--s) * .4) calc(var(--s) * .55); }
-    .kur-kart.usd { background:rgba(22,163,74,.08); border:1px solid rgba(22,163,74,.2); }
-    .kur-kart.eur { background:rgba(37,99,235,.08); border:1px solid rgba(37,99,235,.2); }
+    .doviz-satirlar { display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--s)*.5); }
+    .kur-kart {
+      border-radius: calc(var(--s)*.6);
+      padding: calc(var(--s)*.5) calc(var(--s)*.65);
+      border: 1.5px solid;
+    }
+    .kur-kart.usd { background: #F0FDF4; border-color: #BBF7D0; }
+    .kur-kart.eur { background: #EFF6FF; border-color: #BFDBFE; }
     .kur-etiket {
-      font-size:calc(var(--s) * .6); font-weight:700; letter-spacing:1.2px;
-      text-transform:uppercase; font-family:'DM Mono',monospace;
+      font-size: calc(var(--s)*.62); font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
     }
-    .kur-kart.usd .kur-etiket { color:var(--usd); }
-    .kur-kart.eur .kur-etiket { color:var(--eur); }
+    .kur-kart.usd .kur-etiket { color: #16A34A; }
+    .kur-kart.eur .kur-etiket { color: #2563EB; }
     .kur-deger {
-      font-size:calc(var(--s) * 1.05); font-weight:700;
-      font-family:'DM Mono',monospace; color:var(--text); line-height:1.3;
+      font-family: 'DM Mono', monospace;
+      font-size: calc(var(--s)*1.05); font-weight: 500;
+      color: var(--metin); margin-top: calc(var(--s)*.1);
     }
-    .kur-alt { font-size:calc(var(--s) * .55); color:var(--muted); font-family:'DM Mono',monospace; }
+    .kur-alt { font-size: calc(var(--s)*.55); color: var(--soluk); margin-top: calc(var(--s)*.05); }
 
-    .donusum-butonlar { display:grid; grid-template-columns:repeat(4,1fr); gap:calc(var(--s) * .28); margin-top:calc(var(--s) * .38); }
-    .don-btn {
-      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .62); font-weight:600;
-      padding:calc(var(--s) * .3) calc(var(--s) * .1);
-      border-radius:calc(var(--s) * .5); border:1.5px solid;
-      cursor:pointer; transition:all .12s; text-align:center;
-      -webkit-tap-highlight-color:transparent;
+    .doviz-butonlar {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: calc(var(--s)*.3); margin-top: calc(var(--s)*.5);
     }
-    .don-btn:active { transform:scale(.93); }
-    .don-btn.tl-usd { background:rgba(22,163,74,.08); border-color:rgba(22,163,74,.3); color:var(--usd); }
-    .don-btn.usd-tl { background:rgba(22,163,74,.15); border-color:rgba(22,163,74,.4); color:var(--usd); }
-    .don-btn.tl-eur { background:rgba(37,99,235,.08); border-color:rgba(37,99,235,.3); color:var(--eur); }
-    .don-btn.eur-tl { background:rgba(37,99,235,.15); border-color:rgba(37,99,235,.4); color:var(--eur); }
+    .d-btn {
+      font-size: calc(var(--s)*.62); font-weight: 600;
+      padding: calc(var(--s)*.32) calc(var(--s)*.1);
+      border-radius: calc(var(--s)*.5); border: 1.5px solid;
+      cursor: pointer; text-align: center; transition: all .12s;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .d-btn:active { transform: scale(.93); }
+    .d-btn.gu { background: #F0FDF4; border-color: #86EFAC; color: #16A34A; }
+    .d-btn.ug { background: #DCFCE7; border-color: #4ADE80; color: #15803D; }
+    .d-btn.ge { background: #EFF6FF; border-color: #93C5FD; color: #2563EB; }
+    .d-btn.eg { background: #DBEAFE; border-color: #60A5FA; color: #1D4ED8; }
 
     /* ── Altın ── */
-    .altin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:calc(var(--s) * .3); }
+    .altin-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: calc(var(--s)*.4); }
     .altin-kart {
-      background:rgba(180,83,9,.06); border:1px solid rgba(180,83,9,.18);
-      border-radius:calc(var(--s) * .6); padding:calc(var(--s) * .35) calc(var(--s) * .45);
-      cursor:pointer; transition:all .12s; -webkit-tap-highlight-color:transparent;
+      background: #FFFBEB; border: 1.5px solid #FDE68A;
+      border-radius: calc(var(--s)*.6);
+      padding: calc(var(--s)*.45) calc(var(--s)*.6);
+      cursor: pointer; transition: all .12s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .altin-kart:active { transform:scale(.95); background:rgba(180,83,9,.14); }
-    .altin-isim {
-      font-size:calc(var(--s) * .56); font-weight:700; letter-spacing:1px;
-      text-transform:uppercase; color:var(--gold); font-family:'DM Mono',monospace;
-    }
-    .altin-fiyat {
-      font-size:calc(var(--s) * .88); font-weight:700;
-      font-family:'DM Mono',monospace; color:var(--text);
-      margin-top:calc(var(--s) * .1); line-height:1.2;
-    }
-    .altin-alt { font-size:calc(var(--s) * .52); color:var(--muted); font-family:'DM Mono',monospace; }
+    .altin-kart:active { background: #FEF3C7; transform: scale(.95); }
+    .altin-isim { font-size: calc(var(--s)*.62); font-weight: 700; color: #92400E; text-transform: uppercase; letter-spacing: .5px; }
+    .altin-fiyat { font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.92); font-weight: 500; color: var(--metin); margin-top: calc(var(--s)*.1); }
+    .altin-alt { font-size: calc(var(--s)*.52); color: var(--soluk); }
 
-    .altin-don-butonlar { display:grid; grid-template-columns:repeat(3,1fr); gap:calc(var(--s) * .28); margin-top:calc(var(--s) * .38); }
-    .altin-don-btn {
-      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .6); font-weight:600;
-      padding:calc(var(--s) * .3) calc(var(--s) * .1);
-      border-radius:calc(var(--s) * .5); border:1.5px solid rgba(180,83,9,.25);
-      background:rgba(180,83,9,.07); color:var(--gold);
-      cursor:pointer; -webkit-tap-highlight-color:transparent;
+    .altin-butonlar {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: calc(var(--s)*.3); margin-top: calc(var(--s)*.5);
     }
-    .altin-don-btn:active { transform:scale(.95); }
+    .a-btn {
+      font-size: calc(var(--s)*.6); font-weight: 600;
+      padding: calc(var(--s)*.32) calc(var(--s)*.1);
+      border-radius: calc(var(--s)*.5);
+      border: 1.5px solid #FDE68A;
+      background: #FFFBEB; color: #92400E;
+      cursor: pointer; text-align: center; transition: all .12s;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .a-btn:active { background: #FEF3C7; transform: scale(.93); }
 
-    /* ── Hesap Ekranı ── */
-    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:calc(var(--s) * .65); }
-    .header h1 {
-      font-size:calc(var(--s) * .82); font-weight:800;
-      letter-spacing:3px; text-transform:uppercase; color:var(--accent);
+    /* ── Ekran ── */
+    .ekran-alani {
+      background: var(--kart);
+      border: 1px solid var(--sinir);
+      border-radius: calc(var(--s)*1);
+      box-shadow: 0 2px 12px rgba(0,48,135,.06);
+      overflow: hidden;
     }
-    .mode-badge {
-      cursor:pointer; transition:all .15s;
-      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .6);
-      padding:.18rem .55rem; background:rgba(124,58,237,.12);
-      border:1px solid rgba(124,58,237,.25); border-radius:99px; color:var(--accent);
+    .ekran-ust {
+      background: linear-gradient(135deg, var(--lacivert), var(--mavi));
+      padding: calc(var(--s)*.5) calc(var(--s)*1);
+      display: flex; justify-content: space-between; align-items: center;
     }
+    .ekran-etiket { font-size: calc(var(--s)*.62); color: rgba(255,255,255,.7); font-weight: 500; }
+    .ekran-expr   { font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.72); color: rgba(255,255,255,.85); }
 
-    .display {
-      background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,.75);
-      border-radius:calc(var(--s) * 1); padding:calc(var(--s) * .65) calc(var(--s) * .85) calc(var(--s) * .75);
-      margin-bottom:calc(var(--s) * .65); min-height:calc(var(--s) * 5.5);
-      display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-end; gap:calc(var(--s) * .18);
-      overflow:hidden;
+    .ekran-deger {
+      padding: calc(var(--s)*.6) calc(var(--s)*1) calc(var(--s)*.8);
+      text-align: right; cursor: pointer;
+      transition: background .15s;
     }
-    .expr {
-      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .68); color:var(--muted);
-      min-height:1.1em; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    .ekran-deger:active { background: #F8FAFF; }
+    .ekran-deger .deger {
+      font-family: 'DM Mono', monospace; font-weight: 500;
+      color: var(--metin); word-break: break-all;
+      transition: color .2s, font-size .15s;
     }
-    .result {
-      font-family:'DM Mono',monospace; font-weight:500; color:var(--text);
-      word-break:break-all; line-height:1.1; transition:color .2s, font-size .15s;
-      max-width:100%; text-align:right;
-      font-size: calc(var(--s) * 2);
+    .ekran-deger .ipucu {
+      font-size: calc(var(--s)*.58); color: var(--turuncu);
+      font-weight: 600; margin-top: calc(var(--s)*.2);
+      display: flex; align-items: center; justify-content: flex-end; gap: .3rem;
     }
-    .result.ok    { color:var(--green); }
-    .result.error { color:var(--red); font-size:calc(var(--s) * .9) !important; }
-    .result.doviz { color:#2563eb; }
-    .result.gold  { color:var(--gold); }
+    .ekran-deger .ipucu::before { content: ""; width: 6px; height: 6px; background: var(--turuncu); border-radius: 50%; display: inline-block; animation: blink 1.2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
 
-    /* ── Bellek ── */
-    .mem-bar { display:flex; gap:calc(var(--s) * .25); margin-bottom:calc(var(--s) * .55); }
-    .mem-bar button {
-      flex:1; font-family:'DM Mono',monospace; font-size:calc(var(--s) * .65);
-      padding:calc(var(--s) * .28) 0;
-      border:1px solid rgba(124,58,237,.2); border-radius:calc(var(--s) * .45);
-      background:rgba(124,58,237,.07); color:var(--accent);
-      cursor:pointer; -webkit-tap-highlight-color:transparent;
-    }
-    .mem-bar button:active { background:rgba(124,58,237,.2); }
+    .deger.ok    { color: var(--yesil); }
+    .deger.error { color: #DC2626; }
+    .deger.doviz { color: var(--mavi); }
+    .deger.gold  { color: #B45309; }
 
-    /* ── Tabs ── */
-    .tabs {
-      display:flex; gap:calc(var(--s) * .28); margin-bottom:calc(var(--s) * .55);
-      background:rgba(255,255,255,.4); border:1px solid var(--border);
-      border-radius:calc(var(--s) * .75); padding:calc(var(--s) * .18);
+    /* ── Bellek Çubuğu ── */
+    .mem-bar {
+      display: flex; gap: calc(var(--s)*.25);
+      padding: calc(var(--s)*.4) calc(var(--s)*.85);
+      border-top: 1px solid var(--sinir);
     }
-    .tab {
-      flex:1; padding:calc(var(--s) * .32); border:none; background:transparent;
-      color:var(--muted); font-family:'Outfit',sans-serif;
-      font-size:calc(var(--s) * .78); font-weight:700;
-      border-radius:calc(var(--s) * .55); cursor:pointer; transition:all .18s;
-      -webkit-tap-highlight-color:transparent;
+    .mem-btn {
+      flex: 1; font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.62);
+      padding: calc(var(--s)*.28) 0; border: 1px solid var(--sinir);
+      border-radius: calc(var(--s)*.45); background: var(--bg);
+      color: var(--lacivert); cursor: pointer; font-weight: 600;
+      -webkit-tap-highlight-color: transparent; transition: all .12s;
     }
-    .tab.active { background:white; color:var(--accent); box-shadow:0 2px 8px rgba(124,58,237,.18); }
+    .mem-btn:active { background: var(--lacivert); color: white; }
 
-    /* ── Tuşlar ── */
-    .panel-calc { display:none; }
-    .panel-calc.active { display:grid; }
-    .grid-4 { grid-template-columns:repeat(4,1fr); gap:calc(var(--s) * .35); }
-    .grid-5 { grid-template-columns:repeat(5,1fr); gap:calc(var(--s) * .28); }
+    /* ── Bilimsel Tab ── */
+    .tab-bar {
+      display: flex; gap: calc(var(--s)*.3);
+      padding: calc(var(--s)*.4) calc(var(--s)*.85);
+      border-top: 1px solid var(--sinir);
+    }
+    .t-btn {
+      flex: 1; font-size: calc(var(--s)*.72); font-weight: 600;
+      padding: calc(var(--s)*.3); border-radius: calc(var(--s)*.5);
+      border: 1.5px solid var(--sinir); background: var(--bg);
+      color: var(--soluk); cursor: pointer; transition: all .18s;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .t-btn.aktif { background: var(--lacivert); color: white; border-color: var(--lacivert); }
+    .t-btn:active { transform: scale(.95); }
 
-    button.key {
-      font-family:'DM Mono',monospace;
-      font-size:calc(var(--s) * .9); font-weight:500;
-      padding:calc(var(--s) * .7) calc(var(--s) * .3);
-      border:1.5px solid rgba(255,255,255,.6);
-      border-radius:calc(var(--s) * .75);
-      background:rgba(255,255,255,.6); color:var(--text);
-      cursor:pointer; transition:all .1s;
-      -webkit-tap-highlight-color:transparent;
-      user-select:none;
+    /* ── Klavye Panelleri ── */
+    .klavye-panel { display: none; }
+    .klavye-panel.aktif { display: grid; }
+    .grid-4 { grid-template-columns: repeat(4,1fr); gap: calc(var(--s)*.35); padding: calc(var(--s)*.5) calc(var(--s)*.85) calc(var(--s)*.7); }
+    .grid-5 { grid-template-columns: repeat(5,1fr); gap: calc(var(--s)*.28); padding: calc(var(--s)*.4) calc(var(--s)*.85) calc(var(--s)*.6); }
+
+    .k {
+      font-family: 'Inter', sans-serif; font-size: calc(var(--s)*.88); font-weight: 600;
+      padding: calc(var(--s)*.72) calc(var(--s)*.3);
+      border-radius: calc(var(--s)*.65); border: 1.5px solid var(--sinir);
+      background: var(--bg); color: var(--metin);
+      cursor: pointer; transition: all .1s;
+      -webkit-tap-highlight-color: transparent; user-select: none;
     }
-    button.key:active { transform:scale(.91); }
-    button.key.op  { background:rgba(124,58,237,.1); color:var(--accent); border-color:rgba(124,58,237,.25); }
-    button.key.eq  {
-      background:linear-gradient(135deg,#7c3aed,#06b6d4); color:white;
-      border-color:transparent; font-size:calc(var(--s) * 1.1);
-    }
-    button.key.clr { background:rgba(220,38,38,.09); color:var(--red); border-color:rgba(220,38,38,.2); }
-    button.key.sci { background:rgba(6,182,212,.09); color:#0369a1; border-color:rgba(6,182,212,.25); font-size:calc(var(--s) * .68); }
-    button.key.num0 { background:rgba(255,255,255,.8); font-size:calc(var(--s) * .95); font-weight:600; }
+    .k:active { transform: scale(.91); }
+    .k.op     { background: #EFF6FF; border-color: #BFDBFE; color: var(--mavi); font-weight: 700; }
+    .k.eq     { background: var(--turuncu); border-color: var(--turuncu); color: white; font-size: calc(var(--s)*1.1); font-weight: 700; box-shadow: 0 3px 10px rgba(247,148,29,.35); }
+    .k.eq:active { background: var(--turuncu-k); }
+    .k.clr    { background: #FEF2F2; border-color: #FECACA; color: #DC2626; font-weight: 700; }
+    .k.sci    { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; font-size: calc(var(--s)*.68); font-weight: 600; }
+    .k.num    { background: white; border-color: var(--sinir); font-size: calc(var(--s)*.95); }
 
     /* ── Geçmiş ── */
-    .history { margin-top:calc(var(--s) * .7); border-top:1px solid rgba(255,255,255,.5); padding-top:calc(var(--s) * .55); }
-    .history-title {
-      font-size:calc(var(--s) * .58); letter-spacing:2px; text-transform:uppercase;
-      color:var(--muted); font-family:'DM Mono',monospace; margin-bottom:calc(var(--s) * .35);
+    .gecmis {
+      padding: calc(var(--s)*.4) calc(var(--s)*.85) calc(var(--s)*.5);
+      border-top: 1px solid var(--sinir);
     }
-    .history-list { max-height:calc(var(--s) * 5); overflow-y:auto; display:flex; flex-direction:column; gap:calc(var(--s) * .18); }
-    .hist-item {
-      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .67); color:var(--muted);
-      padding:calc(var(--s) * .22) calc(var(--s) * .42);
-      background:rgba(255,255,255,.4); border-radius:calc(var(--s) * .42);
-      cursor:pointer; display:flex; justify-content:space-between;
-      -webkit-tap-highlight-color:transparent;
+    .gecmis-baslik { font-size: calc(var(--s)*.6); font-weight: 700; color: var(--soluk); text-transform: uppercase; letter-spacing: 1px; margin-bottom: calc(var(--s)*.35); }
+    .gecmis-liste  { max-height: calc(var(--s)*4.5); overflow-y: auto; display: flex; flex-direction: column; gap: calc(var(--s)*.2); }
+    .gecmis-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: calc(var(--s)*.22) calc(var(--s)*.45);
+      background: var(--bg); border-radius: calc(var(--s)*.4);
+      cursor: pointer; transition: all .12s;
+      font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.67);
+      color: var(--soluk);
     }
-    .hist-item:active { background:rgba(255,255,255,.7); }
-    .hist-item .res { color:var(--green); font-weight:500; }
+    .gecmis-item:active { background: #EFF6FF; }
+    .gecmis-sonuc { color: var(--yesil); font-weight: 600; }
 
-    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-    .yukleniyor { animation:pulse 1.5s infinite; }
-  
-    .header-btn {
-      font-family:'DM Mono',monospace; font-weight:700;
-      border-radius:99px; border:none; cursor:pointer;
-      transition:all .15s; -webkit-tap-highlight-color:transparent;
-      display:flex; align-items:center; justify-content:center;
+    /* ══════════════════════════════════════════════
+       NUMARA KLAVYE MODAL (Banka stili)
+    ══════════════════════════════════════════════ */
+    .modal-arka {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0); transition: background .25s;
     }
-    .header-btn:active { transform:scale(.92); }
-    .header-btn.esit {
-      font-size:calc(var(--s)*1.15);
-      padding:calc(var(--s)*.3) calc(var(--s)*1.1);
-      background:linear-gradient(135deg,#7c3aed,#06b6d4);
-      color:white;
-      box-shadow:0 3px 12px rgba(124,58,237,.4);
-      min-width:calc(var(--s)*3.2);
+    .modal-arka.acik {
+      display: block;
+      background: rgba(0,30,80,.45);
+      backdrop-filter: blur(4px);
     }
-    .header-btn.sifirla {
-      font-size:calc(var(--s)*1.15);
-      padding:calc(var(--s)*.3) calc(var(--s)*1.1);
-      background:linear-gradient(135deg,#06b6d4,#7c3aed);
-      color:white;
-      box-shadow:0 3px 12px rgba(6,182,212,.4);
-      min-width:calc(var(--s)*3.2);
+    .modal-icerik {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 460px;
+      background: var(--kart);
+      border-radius: calc(var(--s)*1.5) calc(var(--s)*1.5) 0 0;
+      box-shadow: 0 -8px 40px rgba(0,30,80,.2);
+      transition: transform .3s cubic-bezier(.32,1.2,.5,1);
+      transform: translateX(-50%) translateY(100%);
+      overflow: hidden;
     }
-    .header-btn.sifirla:active { opacity:.8; }
+    .modal-arka.acik .modal-icerik {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Modal Ekran */
+    .modal-ekran {
+      background: linear-gradient(135deg, var(--lacivert), var(--mavi));
+      padding: calc(var(--s)*.8) calc(var(--s)*1.2) calc(var(--s)*1);
+    }
+    .modal-expr { font-family: 'DM Mono', monospace; font-size: calc(var(--s)*.72); color: rgba(255,255,255,.7); min-height: 1.2em; }
+    .modal-deger {
+      font-family: 'DM Mono', monospace; font-weight: 500;
+      color: white; text-align: right;
+      transition: font-size .1s;
+    }
+
+    /* Modal Numpad */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: calc(var(--s)*.35);
+      padding: calc(var(--s)*.7) calc(var(--s)*.85) calc(var(--s)*1);
+    }
+    .np {
+      font-family: 'Inter', sans-serif; font-size: calc(var(--s)*1.1); font-weight: 600;
+      padding: calc(var(--s)*.78) calc(var(--s)*.3);
+      border-radius: calc(var(--s)*.75); border: 1.5px solid var(--sinir);
+      background: var(--bg); color: var(--metin);
+      cursor: pointer; transition: all .1s; text-align: center;
+      -webkit-tap-highlight-color: transparent; user-select: none;
+    }
+    .np:active { transform: scale(.9); background: #E0E8FF; }
+    .np.sil  { background: #FEF2F2; border-color: #FECACA; color: #DC2626; font-size: calc(var(--s)*1.2); }
+    .np.sil:active { background: #FEE2E2; }
+    .np.tamam {
+      background: var(--turuncu); border-color: var(--turuncu); color: white;
+      font-size: calc(var(--s)*.82); letter-spacing: .5px;
+      box-shadow: 0 3px 12px rgba(247,148,29,.4);
+    }
+    .np.tamam:active { background: var(--turuncu-k); }
+    .np.isaret { background: #EFF6FF; border-color: #BFDBFE; color: var(--mavi); }
+    .np.virgul { font-weight: 700; }
+
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+    .yukleniyor { animation: pulse 1.5s infinite; }
   </style>
 </head>
 <body>
-  <div class="blob blob1"></div>
-  <div class="blob blob2"></div>
-  <div class="blob blob3"></div>
+<div class="kart">
 
-  <div class="card">
-
-    <!-- ══ DÖVİZ ══ -->
-    <div class="panel-kart">
-      <div class="panel-baslik">
-        <span>📡 Canlı Döviz</span>
-        <button class="yenile-btn" onclick="kurlariGuncelle()">↻ Yenile</button>
-      </div>
-      <div class="doviz-satirlar">
-        <div class="kur-kart usd">
-          <div class="kur-etiket">USD / TL</div>
-          <div class="kur-deger" id="usdDeger"><span class="yukleniyor">—</span></div>
-          <div class="kur-alt"   id="usdTarih">Yükleniyor...</div>
-        </div>
-        <div class="kur-kart eur">
-          <div class="kur-etiket">EUR / TL</div>
-          <div class="kur-deger" id="eurDeger"><span class="yukleniyor">—</span></div>
-          <div class="kur-alt"   id="eurTarih">Yükleniyor...</div>
-        </div>
-      </div>
-      <div class="donusum-butonlar">
-        <button class="don-btn tl-usd" onclick="dovizCevir('TL→USD')">TL→$</button>
-        <button class="don-btn usd-tl" onclick="dovizCevir('USD→TL')">$→TL</button>
-        <button class="don-btn tl-eur" onclick="dovizCevir('TL→EUR')">TL→€</button>
-        <button class="don-btn eur-tl" onclick="dovizCevir('EUR→TL')">€→TL</button>
-      </div>
+  <!-- ══ HEADER ══ -->
+  <div class="app-header">
+    <div class="app-logo">
+      <div class="ikon">₺</div>
+      <span>Hesap Makinesi</span>
     </div>
-
-    <!-- ══ ALTIN ══ -->
-    <div class="panel-kart">
-      <div class="panel-baslik">
-        <span>🥇 Altın (altinkaynak.com)</span>
-        <button class="yenile-btn" onclick="altinGuncelle()">↻ Yenile</button>
-      </div>
-      <div class="altin-grid">
-        <div class="altin-kart" onclick="altinEkrana('gram24')">
-          <div class="altin-isim">24 Ayar</div>
-          <div class="altin-fiyat" id="ag24"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">gram/₺</div>
-        </div>
-        <div class="altin-kart" onclick="altinEkrana('gram22')">
-          <div class="altin-isim">22 Ayar</div>
-          <div class="altin-fiyat" id="ag22"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">gram/₺</div>
-        </div>
-        <div class="altin-kart" onclick="altinEkrana('ceyrek')">
-          <div class="altin-isim">Çeyrek</div>
-          <div class="altin-fiyat" id="agCeyrek"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">adet/₺</div>
-        </div>
-        <div class="altin-kart" onclick="altinEkrana('yarim')">
-          <div class="altin-isim">Yarım</div>
-          <div class="altin-fiyat" id="agYarim"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">adet/₺</div>
-        </div>
-        <div class="altin-kart" onclick="altinEkrana('cumhuriyet')">
-          <div class="altin-isim">Cumhuriyet</div>
-          <div class="altin-fiyat" id="agCum"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">adet/₺</div>
-        </div>
-
-      </div>
-      <div class="altin-don-butonlar" style="grid-template-columns:repeat(4,1fr);">
-        <button class="altin-don-btn" onclick="altinCevir('TL→gr24')">TL→gr(24)</button>
-        <button class="altin-don-btn" onclick="altinCevir('gr24→TL')">gr(24)→TL</button>
-        <button class="altin-don-btn" onclick="altinCevir('TL→gr22')">TL→gr(22)</button>
-        <button class="altin-don-btn" onclick="altinCevir('gr22→TL')">gr(22)→TL</button>
-      </div>
-      <div class="altin-alt" id="altinKaynak" style="text-align:right;margin-top:.3rem;"></div>
-    </div>
-
-    <!-- ══ HESAP MAKİNESİ ══ -->
-    <div class="header">
-      <h1>Hesap Makinesi</h1>
-      <div style="display:flex;gap:calc(var(--s)*.35);align-items:center;margin-right:calc(var(--s)*1.2);">
-        <button class="header-btn esit" onclick="hesapla()" title="Hesapla">=</button>
-        <button class="header-btn sifirla" id="modeBadge" onclick="temizle()" title="Sıfırla">↺</button>
-      </div>
-    </div>
-
-    <div class="display">
-      <div class="expr"   id="expr"></div>
-      <div class="result" id="result">0</div>
-    </div>
-
-    <div class="mem-bar">
-      <button onclick="memClear()">MC</button>
-      <button onclick="memRecall()">MR</button>
-      <button onclick="memAdd()">M+</button>
-      <button onclick="memSub()">M−</button>
-      <button onclick="memStore()">MS</button>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('temel',this)">Temel</button>
-      <button class="tab"        onclick="switchTab('bilim',this)">Bilimsel</button>
-    </div>
-
-    <div class="panel-calc active grid-4" id="panel-temel">
-      <button class="key clr" onclick="temizle()" style="grid-column:span 2">AC</button>
-      <button class="key op"  onclick="sil()">⌫</button>
-      <button class="key op"  onclick="setOp('mod','%')">%</button>
-      <button class="key sci" onclick="append('(')">(</button>
-      <button class="key sci" onclick="append(')')">)</button>
-      <button class="key sci" onclick="appendConst(Math.PI,'π')">π</button>
-      <button class="key op"  onclick="setOp('us','xʸ')">xʸ</button>
-      <button class="key num0" onclick="append('7')">7</button>
-      <button class="key num0" onclick="append('8')">8</button>
-      <button class="key num0" onclick="append('9')">9</button>
-      <button class="key op"   onclick="setOp('bolme','÷')">÷</button>
-      <button class="key num0" onclick="append('4')">4</button>
-      <button class="key num0" onclick="append('5')">5</button>
-      <button class="key num0" onclick="append('6')">6</button>
-      <button class="key op"   onclick="setOp('carpma','×')">×</button>
-      <button class="key num0" onclick="append('1')">1</button>
-      <button class="key num0" onclick="append('2')">2</button>
-      <button class="key num0" onclick="append('3')">3</button>
-      <button class="key op"   onclick="setOp('cikarma','−')">−</button>
-      <button class="key num0" onclick="toggleSign()">+/−</button>
-      <button class="key num0" onclick="append('0')">0</button>
-      <button class="key num0" onclick="append('.')">.</button>
-      <button class="key op"   onclick="setOp('toplama','+')">+</button>
-      <button class="key eq"   onclick="hesapla()" style="grid-column:span 4">=</button>
-    </div>
-
-    <div class="panel-calc grid-5" id="panel-bilim">
-      <button class="key sci" onclick="sciHesapla('karekök')">√x</button>
-      <button class="key sci" onclick="sciHesapla('kare')">x²</button>
-      <button class="key sci" onclick="sciHesapla('kup')">x³</button>
-      <button class="key sci" onclick="sciHesapla('faktöriyel')">x!</button>
-      <button class="key sci" onclick="sciHesapla('log')">log</button>
-      <button class="key sci" onclick="sciHesapla('ln')">ln</button>
-      <button class="key sci" onclick="sciHesapla('sin')">sin°</button>
-      <button class="key sci" onclick="sciHesapla('cos')">cos°</button>
-      <button class="key sci" onclick="sciHesapla('tan')">tan°</button>
-      <button class="key sci" onclick="sciHesapla('ters')">1/x</button>
-      <button class="key sci" onclick="appendConst(Math.PI,'π')">π</button>
-      <button class="key sci" onclick="appendConst(Math.E,'e')">e</button>
-      <button class="key sci" onclick="sciHesapla('abs')">|x|</button>
-      <button class="key clr" onclick="temizle()">AC</button>
-      <button class="key op"  onclick="sil()">⌫</button>
-      <button class="key num0" onclick="append('7')">7</button>
-      <button class="key num0" onclick="append('8')">8</button>
-      <button class="key num0" onclick="append('9')">9</button>
-      <button class="key op"   onclick="setOp('bolme','÷')">÷</button>
-      <button class="key op"   onclick="setOp('carpma','×')">×</button>
-      <button class="key num0" onclick="append('4')">4</button>
-      <button class="key num0" onclick="append('5')">5</button>
-      <button class="key num0" onclick="append('6')">6</button>
-      <button class="key op"   onclick="setOp('cikarma','−')">−</button>
-      <button class="key op"   onclick="setOp('toplama','+')">+</button>
-      <button class="key num0" onclick="append('1')">1</button>
-      <button class="key num0" onclick="append('2')">2</button>
-      <button class="key num0" onclick="append('3')">3</button>
-      <button class="key num0" onclick="append('0')" style="grid-column:span 2">0</button>
-      <button class="key eq"   onclick="hesapla()" style="grid-column:span 5">=</button>
-    </div>
-
-    <div class="history">
-      <div class="history-title">— Geçmiş</div>
-      <div class="history-list" id="histList"></div>
+    <div class="app-header-btn">
+      <button class="hdr-btn esit"    onclick="hesapla()"  title="Hesapla">=</button>
+      <button class="hdr-btn sifirla" onclick="temizle()"  title="Sıfırla">↺</button>
     </div>
   </div>
 
+  <!-- ══ DÖVİZ ══ -->
+  <div class="panel">
+    <div class="panel-baslik">
+      <span>📡 Canlı Döviz</span>
+      <button class="yenile-btn" onclick="kurlariGuncelle()">↻ Yenile</button>
+    </div>
+    <div class="doviz-satirlar">
+      <div class="kur-kart usd">
+        <div class="kur-etiket">USD / TL</div>
+        <div class="kur-deger" id="usdDeger"><span class="yukleniyor">—</span></div>
+        <div class="kur-alt"   id="usdTarih">Yükleniyor...</div>
+      </div>
+      <div class="kur-kart eur">
+        <div class="kur-etiket">EUR / TL</div>
+        <div class="kur-deger" id="eurDeger"><span class="yukleniyor">—</span></div>
+        <div class="kur-alt"   id="eurTarih">Yükleniyor...</div>
+      </div>
+    </div>
+    <div class="doviz-butonlar">
+      <button class="d-btn gu" onclick="dovizCevir('TL→USD')">TL→$</button>
+      <button class="d-btn ug" onclick="dovizCevir('USD→TL')">$→TL</button>
+      <button class="d-btn ge" onclick="dovizCevir('TL→EUR')">TL→€</button>
+      <button class="d-btn eg" onclick="dovizCevir('EUR→TL')">€→TL</button>
+    </div>
+  </div>
+
+  <!-- ══ ALTIN ══ -->
+  <div class="panel">
+    <div class="panel-baslik">
+      <span>🥇 Altın (altinkaynak.com)</span>
+      <button class="yenile-btn" onclick="altinGuncelle()">↻ Yenile</button>
+    </div>
+    <div class="altin-grid">
+      <div class="altin-kart" onclick="altinEkrana('gram24')">
+        <div class="altin-isim">24 Ayar Gram</div>
+        <div class="altin-fiyat" id="ag24"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / gram</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('gram22')">
+        <div class="altin-isim">22 Ayar Gram</div>
+        <div class="altin-fiyat" id="ag22"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / gram</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('ceyrek')">
+        <div class="altin-isim">Çeyrek Altın</div>
+        <div class="altin-fiyat" id="agCeyrek"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / adet</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('yarim')">
+        <div class="altin-isim">Yarım Altın</div>
+        <div class="altin-fiyat" id="agYarim"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / adet</div>
+      </div>
+      <div class="altin-kart" onclick="altinEkrana('cumhuriyet')" style="grid-column:span 2;">
+        <div class="altin-isim">Cumhuriyet Altını</div>
+        <div class="altin-fiyat" id="agCum"><span class="yukleniyor">—</span></div>
+        <div class="altin-alt">₺ / adet</div>
+      </div>
+    </div>
+    <div class="altin-butonlar">
+      <button class="a-btn" onclick="altinCevir('TL→gr24')">TL→gr(24)</button>
+      <button class="a-btn" onclick="altinCevir('gr24→TL')">gr(24)→TL</button>
+      <button class="a-btn" onclick="altinCevir('TL→gr22')">TL→gr(22)</button>
+      <button class="a-btn" onclick="altinCevir('gr22→TL')">gr(22)→TL</button>
+    </div>
+    <div class="kur-alt" id="altinKaynak" style="text-align:right;margin-top:.4rem;"></div>
+  </div>
+
+  <!-- ══ HESAP MAKİNESİ EKRANI ══ -->
+  <div class="ekran-alani">
+
+    <!-- Üst bilgi -->
+    <div class="ekran-ust">
+      <span class="ekran-etiket" id="ekranEtiket">Temel Mod</span>
+      <span class="ekran-expr"   id="expr"></span>
+    </div>
+
+    <!-- Tıklanabilir ekran -->
+    <div class="ekran-deger" onclick="modalAc()">
+      <div class="deger" id="result" style="font-size:calc(var(--s)*2.1)">0</div>
+      <div class="ipucu">Rakam girmek için dokun</div>
+    </div>
+
+    <!-- Bellek -->
+    <div class="mem-bar">
+      <button class="mem-btn" onclick="memClear()">MC</button>
+      <button class="mem-btn" onclick="memRecall()">MR</button>
+      <button class="mem-btn" onclick="memAdd()">M+</button>
+      <button class="mem-btn" onclick="memSub()">M−</button>
+      <button class="mem-btn" onclick="memStore()">MS</button>
+    </div>
+
+    <!-- Tab -->
+    <div class="tab-bar">
+      <button class="t-btn aktif" onclick="switchTab('temel',this)">Temel</button>
+      <button class="t-btn"       onclick="switchTab('bilim',this)">Bilimsel</button>
+    </div>
+
+    <!-- TEMEL PANEL -->
+    <div class="klavye-panel aktif grid-4" id="panel-temel">
+      <button class="k clr" onclick="temizle()" style="grid-column:span 2">AC</button>
+      <button class="k op"  onclick="sil()">⌫</button>
+      <button class="k op"  onclick="setOp('mod','%')">%</button>
+      <button class="k sci" onclick="appendConst(Math.PI,'π')">π</button>
+      <button class="k sci" onclick="append('(')">(</button>
+      <button class="k sci" onclick="append(')')">)</button>
+      <button class="k op"  onclick="setOp('us','xʸ')">xʸ</button>
+      <button class="k num" onclick="append('7')">7</button>
+      <button class="k num" onclick="append('8')">8</button>
+      <button class="k num" onclick="append('9')">9</button>
+      <button class="k op"  onclick="setOp('bolme','÷')">÷</button>
+      <button class="k num" onclick="append('4')">4</button>
+      <button class="k num" onclick="append('5')">5</button>
+      <button class="k num" onclick="append('6')">6</button>
+      <button class="k op"  onclick="setOp('carpma','×')">×</button>
+      <button class="k num" onclick="append('1')">1</button>
+      <button class="k num" onclick="append('2')">2</button>
+      <button class="k num" onclick="append('3')">3</button>
+      <button class="k op"  onclick="setOp('cikarma','−')">−</button>
+      <button class="k num" onclick="toggleSign()">+/−</button>
+      <button class="k num" onclick="append('0')">0</button>
+      <button class="k num" onclick="append('.')">.</button>
+      <button class="k op"  onclick="setOp('toplama','+')">+</button>
+      <button class="k eq"  onclick="hesapla()" style="grid-column:span 4">=</button>
+    </div>
+
+    <!-- BİLİMSEL PANEL -->
+    <div class="klavye-panel grid-5" id="panel-bilim">
+      <button class="k sci" onclick="sciHesapla('karekök')">√x</button>
+      <button class="k sci" onclick="sciHesapla('kare')">x²</button>
+      <button class="k sci" onclick="sciHesapla('kup')">x³</button>
+      <button class="k sci" onclick="sciHesapla('faktöriyel')">x!</button>
+      <button class="k sci" onclick="sciHesapla('log')">log</button>
+      <button class="k sci" onclick="sciHesapla('ln')">ln</button>
+      <button class="k sci" onclick="sciHesapla('sin')">sin°</button>
+      <button class="k sci" onclick="sciHesapla('cos')">cos°</button>
+      <button class="k sci" onclick="sciHesapla('tan')">tan°</button>
+      <button class="k sci" onclick="sciHesapla('ters')">1/x</button>
+      <button class="k sci" onclick="appendConst(Math.PI,'π')">π</button>
+      <button class="k sci" onclick="appendConst(Math.E,'e')">e</button>
+      <button class="k sci" onclick="sciHesapla('abs')">|x|</button>
+      <button class="k clr" onclick="temizle()">AC</button>
+      <button class="k op"  onclick="sil()">⌫</button>
+      <button class="k num" onclick="append('7')">7</button>
+      <button class="k num" onclick="append('8')">8</button>
+      <button class="k num" onclick="append('9')">9</button>
+      <button class="k op"  onclick="setOp('bolme','÷')">÷</button>
+      <button class="k op"  onclick="setOp('carpma','×')">×</button>
+      <button class="k num" onclick="append('4')">4</button>
+      <button class="k num" onclick="append('5')">5</button>
+      <button class="k num" onclick="append('6')">6</button>
+      <button class="k op"  onclick="setOp('cikarma','−')">−</button>
+      <button class="k op"  onclick="setOp('toplama','+')">+</button>
+      <button class="k num" onclick="append('1')">1</button>
+      <button class="k num" onclick="append('2')">2</button>
+      <button class="k num" onclick="append('3')">3</button>
+      <button class="k num" onclick="append('0')" style="grid-column:span 2">0</button>
+      <button class="k eq"  onclick="hesapla()" style="grid-column:span 5">=</button>
+    </div>
+
+    <!-- Geçmiş -->
+    <div class="gecmis">
+      <div class="gecmis-baslik">Son İşlemler</div>
+      <div class="gecmis-liste" id="histList"></div>
+    </div>
+
+  </div><!-- /ekran-alani -->
+
+</div><!-- /kart -->
+
+<!-- ══ BANKA STİLİ NUMPAD MODAL ══ -->
+<div class="modal-arka" id="modalArka" onclick="modalDis(event)">
+  <div class="modal-icerik" id="modalIcerik">
+
+    <!-- Modal Ekran -->
+    <div class="modal-ekran">
+      <div class="modal-expr"  id="modalExpr"></div>
+      <div class="modal-deger" id="modalDeger" style="font-size:calc(var(--s)*2.2)">0</div>
+    </div>
+
+    <!-- Numpad -->
+    <div class="numpad">
+      <button class="np" onclick="npGir('7')">7</button>
+      <button class="np" onclick="npGir('8')">8</button>
+      <button class="np" onclick="npGir('9')">9</button>
+
+      <button class="np" onclick="npGir('4')">4</button>
+      <button class="np" onclick="npGir('5')">5</button>
+      <button class="np" onclick="npGir('6')">6</button>
+
+      <button class="np" onclick="npGir('1')">1</button>
+      <button class="np" onclick="npGir('2')">2</button>
+      <button class="np" onclick="npGir('3')">3</button>
+
+      <button class="np isaret" onclick="npToggleSign()">+/−</button>
+      <button class="np virgul" onclick="npGir('.')">.</button>
+      <button class="np sil"    onclick="npSil()">⌫</button>
+
+      <button class="np" onclick="npGir('0')" style="grid-column:span 2">0</button>
+      <button class="np tamam"  onclick="modalKapat()">Tamam</button>
+    </div>
+
+  </div>
+</div>
+
 <script>
-let gosterHam="0", tampon=null, mevcutOp=null, opSembol="", yeniGiris=true, bellek=0;
+// ── Durum ─────────────────────────────────────────────────────
+let ham="0", tampon=null, mevcutOp=null, opSembol="", yeniGiris=true, bellek=0;
 let aktifKurlar={USD:null,EUR:null}, aktifAltin={};
 
-const resultEl=document.getElementById("result");
-const exprEl=document.getElementById("expr");
+const resultEl  = document.getElementById("result");
+const exprEl    = document.getElementById("expr");
+const modalDegerEl = document.getElementById("modalDeger");
+const modalExprEl  = document.getElementById("modalExpr");
 
-function formatli(ham) {
-  if(!ham||ham==="-") return ham||"0";
-  const eksi=ham.startsWith("-")?"-":"";
-  const poz=ham.replace("-","");
-  const [tam,ondalik]=poz.split(".");
-  const tamF=tam.replace(/\B(?=(\d{3})+(?!\d))/g,".");
-  return eksi+tamF+(ondalik!==undefined?","+ondalik:"");
+// ── Format ────────────────────────────────────────────────────
+function fmt(h) {
+  if(!h||h==="-") return h||"0";
+  const eksi=h.startsWith("-")?"-":"";
+  const poz=h.replace("-","");
+  const [tam,on]=poz.split(".");
+  return eksi+tam.replace(/\B(?=(\d{3})+(?!\d))/g,".")+(on!==undefined?","+on:"");
 }
 
 function guncelle(cls="") {
-  const txt=formatli(gosterHam);
+  const txt=fmt(ham);
   resultEl.textContent=txt;
-  resultEl.className="result"+(cls?" "+cls:"");
-  // Uzun sayıda font küç
-  const s=getComputedStyle(document.documentElement).getPropertyValue("--s").trim();
-  const base=parseFloat(s)||14;
-  const len=txt.replace(/[^0-9]/g,"").length;
-  resultEl.style.fontSize= len>12?`${base*1.3}px`:len>9?`${base*1.65}px`:`${base*2}px`;
+  resultEl.className="deger"+(cls?" "+cls:"");
+  const n=txt.replace(/[^\d]/g,"").length;
+  const s=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--s"))||14;
+  resultEl.style.fontSize=n>12?`${s*1.3}px`:n>9?`${s*1.65}px`:`${s*2.1}px`;
+  // Modal ekranı da güncelle
+  modalDegerEl.textContent=txt;
+  const mn=txt.replace(/[^\d]/g,"").length;
+  modalDegerEl.style.fontSize=mn>12?`${s*1.4}px`:mn>9?`${s*1.8}px`:`${s*2.2}px`;
+  modalExprEl.textContent=exprEl.textContent;
 }
 
+// ── Modal ─────────────────────────────────────────────────────
+function modalAc() {
+  const el=document.getElementById("modalArka");
+  el.style.display="block";
+  setTimeout(()=>el.classList.add("acik"),10);
+}
+function modalKapat() {
+  const el=document.getElementById("modalArka");
+  el.classList.remove("acik");
+  setTimeout(()=>el.style.display="none",300);
+}
+function modalDis(e) {
+  if(e.target===document.getElementById("modalArka")) modalKapat();
+}
+
+// Numpad giriş
+function npGir(k) {
+  if(yeniGiris){ham="";yeniGiris=false;}
+  if(k==="."&&ham.includes("."))return;
+  if((ham==="0"||ham==="")&&k!=".")ham=k; else ham+=k;
+  guncelle();
+}
+function npSil() { ham=ham.length>1?ham.slice(0,-1):"0"; guncelle(); }
+function npToggleSign() {
+  if(ham.startsWith("-"))ham=ham.slice(1);
+  else if(ham!=="0")ham="-"+ham;
+  guncelle();
+}
+
+// ── Hesap Makinesi ────────────────────────────────────────────
+function append(k) {
+  if(yeniGiris){ham="";yeniGiris=false;}
+  if(k==="."&&ham.includes("."))return;
+  if((ham==="0"||ham==="")&&k!=="."&&k!=="("&&k!==")")ham=k; else ham+=k;
+  guncelle();
+}
+function appendConst(v,l){ham=String(v);exprEl.textContent=l;guncelle();}
+function toggleSign(){if(ham.startsWith("-"))ham=ham.slice(1);else if(ham!=="0")ham="-"+ham;guncelle();}
+function sil(){ham=ham.length>1?ham.slice(0,-1):"0";guncelle();}
+function temizle(){ham="0";tampon=null;mevcutOp=null;opSembol="";exprEl.textContent="";guncelle();}
+function setOp(op,s){tampon=parseFloat(ham);mevcutOp=op;opSembol=s;exprEl.textContent=`${fmt(ham)} ${s}`;yeniGiris=true;guncelle();}
+
+async function hesapla(){
+  if(!mevcutOp)return;
+  const b=parseFloat(ham);
+  exprEl.textContent=`${fmt(String(tampon))} ${opSembol} ${fmt(ham)} =`;
+  await apiHesapla({islem:mevcutOp,a:tampon,b},`${tampon} ${opSembol} ${b}`);
+  mevcutOp=null;
+}
+async function sciHesapla(op){
+  const a=parseFloat(ham);
+  exprEl.textContent=`${op}(${fmt(ham)}) =`;
+  await apiHesapla({islem:op,a},`${op}(${a})`);
+}
+async function apiHesapla(p,ifade){
+  try{
+    const r=await fetch("/hesapla",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});
+    const d=await r.json();
+    if(d.hata){ham="";resultEl.textContent=d.hata;resultEl.className="deger error";resultEl.style.fontSize="";}
+    else{ham=String(d.sonuc);guncelle("ok");histEkle(ifade,d.sonuc);setTimeout(()=>resultEl.classList.remove("ok"),700);}
+  }catch(e){resultEl.textContent="Hata";resultEl.className="deger error";}
+  yeniGiris=true;
+}
+
+// ── Bellek ────────────────────────────────────────────────────
+function memStore() {bellek=parseFloat(ham);exprEl.textContent=`MS → ${fmt(ham)}`;}
+function memRecall(){ham=String(bellek);guncelle();}
+function memClear() {bellek=0;exprEl.textContent="Bellek temizlendi";}
+function memAdd()   {bellek+=parseFloat(ham);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
+function memSub()   {bellek-=parseFloat(ham);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
+
+// ── Tab ───────────────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll(".klavye-panel").forEach(p=>{p.classList.remove("aktif");p.style.display="none";});
+  document.querySelectorAll(".t-btn").forEach(t=>t.classList.remove("aktif"));
+  const p=document.getElementById("panel-"+id);
+  p.style.display="grid"; p.classList.add("aktif"); btn.classList.add("aktif");
+  document.getElementById("ekranEtiket").textContent=id==="temel"?"Temel Mod":"Bilimsel Mod";
+}
+
+// ── Geçmiş ────────────────────────────────────────────────────
+function histEkle(ifade,sonuc){
+  const list=document.getElementById("histList");
+  const div=document.createElement("div");
+  div.className="gecmis-item";
+  const g=typeof sonuc==="number"?sonuc.toLocaleString("tr-TR",{maximumFractionDigits:4}):sonuc;
+  div.innerHTML=`<span>${ifade}</span><span class="gecmis-sonuc">${g}</span>`;
+  div.onclick=()=>{ham=String(sonuc);guncelle();};
+  list.prepend(div);
+  if(list.children.length>8)list.lastChild.remove();
+}
+
+// ── Döviz ─────────────────────────────────────────────────────
 async function kurlariGuncelle(){
   try{
     const k=await fetch("/api/kur").then(r=>r.json());
-    if(!k.USD)return;
-    aktifKurlar=k;
+    if(!k.USD)return; aktifKurlar=k;
     document.getElementById("usdDeger").textContent=k.USD.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
     document.getElementById("eurDeger").textContent=k.EUR.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
     document.getElementById("usdTarih").textContent=k.tarih+" · "+(k.kaynak||"");
     document.getElementById("eurTarih").textContent=k.tarih+" · "+(k.kaynak||"");
   }catch(e){}
 }
-
-function dovizCevir(yon){
-  const d=parseFloat(gosterHam);if(isNaN(d))return;
+function dovizCevir(y){
+  const d=parseFloat(ham);if(isNaN(d))return;
   let s,i;
-  if(yon==="TL→USD"){if(!aktifKurlar.USD)return;s=d/aktifKurlar.USD;i=`${formatli(gosterHam)} ₺→$`;}
-  else if(yon==="USD→TL"){if(!aktifKurlar.USD)return;s=d*aktifKurlar.USD;i=`$${formatli(gosterHam)}→₺`;}
-  else if(yon==="TL→EUR"){if(!aktifKurlar.EUR)return;s=d/aktifKurlar.EUR;i=`${formatli(gosterHam)} ₺→€`;}
-  else if(yon==="EUR→TL"){if(!aktifKurlar.EUR)return;s=d*aktifKurlar.EUR;i=`€${formatli(gosterHam)}→₺`;}
+  if(y==="TL→USD"){if(!aktifKurlar.USD)return;s=d/aktifKurlar.USD;i=`${fmt(ham)} ₺→$`;}
+  else if(y==="USD→TL"){if(!aktifKurlar.USD)return;s=d*aktifKurlar.USD;i=`$${fmt(ham)}→₺`;}
+  else if(y==="TL→EUR"){if(!aktifKurlar.EUR)return;s=d/aktifKurlar.EUR;i=`${fmt(ham)} ₺→€`;}
+  else if(y==="EUR→TL"){if(!aktifKurlar.EUR)return;s=d*aktifKurlar.EUR;i=`€${fmt(ham)}→₺`;}
   s=Math.round(s*100)/100;
-  exprEl.textContent=i; gosterHam=String(s); guncelle("doviz");
+  exprEl.textContent=i; ham=String(s); guncelle("doviz");
   histEkle(i,s); yeniGiris=true;
 }
 
-function fiyatGoster(id,v){
+// ── Altın ─────────────────────────────────────────────────────
+function fp(id,v){
   const el=document.getElementById(id);
   if(!el)return;
   el.textContent=v?v.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
 }
-
 async function altinGuncelle(){
   try{
     const d=await fetch("/api/altin").then(r=>r.json());
     if(d.hata){document.getElementById("altinKaynak").textContent=d.hata;return;}
     aktifAltin=d;
-    fiyatGoster("ag24",d.gram24); fiyatGoster("ag22",d.gram22);
-    fiyatGoster("agCeyrek",d.ceyrek); fiyatGoster("agYarim",d.yarim);
-    fiyatGoster("agCum",d.cumhuriyet); 
+    fp("ag24",d.gram24); fp("ag22",d.gram22);
+    fp("agCeyrek",d.ceyrek); fp("agYarim",d.yarim); fp("agCum",d.cumhuriyet);
     document.getElementById("altinKaynak").textContent=(d.tarih||"")+" · "+(d.kaynak||"");
   }catch(e){}
 }
-
 function altinEkrana(t){
   const f=aktifAltin[t];if(!f)return;
-  gosterHam=String(f);
-  const n={gram24:"24 Ayar Gram",gram22:"22 Ayar Gram",gram18:"18 Ayar Gram",ceyrek:"Çeyrek",yarim:"Yarım",cumhuriyet:"Cumhuriyet"};
+  ham=String(f);
+  const n={gram24:"24 Ayar Gram",gram22:"22 Ayar Gram",ceyrek:"Çeyrek Altın",yarim:"Yarım Altın",cumhuriyet:"Cumhuriyet Altını"};
   exprEl.textContent=n[t]||t; guncelle("gold"); yeniGiris=true;
 }
-
 function altinCevir(y){
-  const d=parseFloat(gosterHam);if(isNaN(d))return;
+  const d=parseFloat(ham);if(isNaN(d))return;
   let s,i;
-  if(y==="TL→gr24"){if(!aktifAltin.gram24)return;s=d/aktifAltin.gram24;i=`${formatli(gosterHam)} ₺→gr(24)`;}
-  else if(y==="TL→gr22"){if(!aktifAltin.gram22)return;s=d/aktifAltin.gram22;i=`${formatli(gosterHam)} ₺→gr(22)`;}
-  else if(y==="gr24→TL"){if(!aktifAltin.gram24)return;s=d*aktifAltin.gram24;i=`${gosterHam}gr(24)→₺`;}
-  else if(y==="gr22→TL"){if(!aktifAltin.gram22)return;s=d*aktifAltin.gram22;i=`${gosterHam}gr(22)→₺`;}
+  if(y==="TL→gr24"){if(!aktifAltin.gram24)return;s=d/aktifAltin.gram24;i=`${fmt(ham)} ₺→gr(24)`;}
+  else if(y==="gr24→TL"){if(!aktifAltin.gram24)return;s=d*aktifAltin.gram24;i=`${ham}gr(24)→₺`;}
+  else if(y==="TL→gr22"){if(!aktifAltin.gram22)return;s=d/aktifAltin.gram22;i=`${fmt(ham)} ₺→gr(22)`;}
+  else if(y==="gr22→TL"){if(!aktifAltin.gram22)return;s=d*aktifAltin.gram22;i=`${ham}gr(22)→₺`;}
   s=Math.round(s*1000)/1000;
-  exprEl.textContent=i; gosterHam=String(s); guncelle("gold");
+  exprEl.textContent=i; ham=String(s); guncelle("gold");
   histEkle(i,s); yeniGiris=true;
 }
 
-function append(k){
-  if(yeniGiris){gosterHam="";yeniGiris=false;}
-  if(k==="."&&gosterHam.includes("."))return;
-  if((gosterHam==="0"||gosterHam==="")&&k!=="."&&k!=="("&&k!==")")gosterHam=k;
-  else gosterHam+=k;
-  guncelle();
-}
-function appendConst(v,l){gosterHam=String(v);exprEl.textContent=l;guncelle();}
-function toggleSign(){if(gosterHam.startsWith("-"))gosterHam=gosterHam.slice(1);else if(gosterHam!=="0")gosterHam="-"+gosterHam;guncelle();}
-function sil(){gosterHam=gosterHam.length>1?gosterHam.slice(0,-1):"0";guncelle();}
-function temizle(){
-  gosterHam="0";tampon=null;mevcutOp=null;opSembol="";exprEl.textContent="";guncelle();
-  // Temel panele dön, Sıfırla butonunu aktif et
-  document.querySelectorAll(".panel-calc").forEach(p=>{p.classList.remove("active");p.style.display="none";});
-  document.getElementById("panel-temel").style.display="grid";
-  document.getElementById("panel-temel").classList.add("active");
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".tab")[0].classList.add("active");
-  document.getElementById("modeBadge").textContent="Temel";
-}
-function setOp(op,s){tampon=parseFloat(gosterHam);mevcutOp=op;opSembol=s;exprEl.textContent=`${formatli(gosterHam)} ${s}`;yeniGiris=true;}
-
-async function hesapla(){
-  if(!mevcutOp)return;
-  const b=parseFloat(gosterHam);
-  exprEl.textContent=`${formatli(String(tampon))} ${opSembol} ${formatli(gosterHam)} =`;
-  await apiHesapla({islem:mevcutOp,a:tampon,b},`${tampon} ${opSembol} ${b}`);
-  mevcutOp=null;
-}
-async function sciHesapla(op){
-  const a=parseFloat(gosterHam);
-  exprEl.textContent=`${op}(${formatli(gosterHam)}) =`;
-  await apiHesapla({islem:op,a},`${op}(${a})`);
-}
-async function apiHesapla(payload,ifade){
-  try{
-    const res=await fetch("/hesapla",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
-    const data=await res.json();
-    if(data.hata){gosterHam="";resultEl.textContent=data.hata;resultEl.className="result error";resultEl.style.fontSize="";}
-    else{gosterHam=String(data.sonuc);guncelle("ok");histEkle(ifade,data.sonuc);setTimeout(()=>resultEl.classList.remove("ok"),700);}
-  }catch(e){resultEl.textContent="Hata";resultEl.className="result error";}
-  yeniGiris=true;
-}
-
-function memStore(){bellek=parseFloat(gosterHam);exprEl.textContent=`MS → ${formatli(gosterHam)}`;}
-function memRecall(){gosterHam=String(bellek);guncelle();}
-function memClear(){bellek=0;exprEl.textContent="Bellek temizlendi";}
-function memAdd(){bellek+=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
-function memSub(){bellek-=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
-
-function histEkle(ifade,sonuc){
-  const list=document.getElementById("histList");
-  const div=document.createElement("div");
-  div.className="hist-item";
-  const g=typeof sonuc==="number"?sonuc.toLocaleString("tr-TR",{maximumFractionDigits:4}):sonuc;
-  div.innerHTML=`<span>${ifade}</span><span class="res">${g}</span>`;
-  div.onclick=()=>{gosterHam=String(sonuc);guncelle();};
-  list.prepend(div);
-  if(list.children.length>10)list.lastChild.remove();
-}
-
-function switchTab(id,btn){
-  document.querySelectorAll(".panel-calc").forEach(p=>{p.classList.remove("active");p.style.display="none";});
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  const p=document.getElementById("panel-"+id);
-  p.style.display="grid";p.classList.add("active");
-  btn.classList.add("active");
-  // mod badge artık sıfırla butonu — metin değişmiyor
-}
-
-function temizle(){
-  gosterHam="0";tampon=null;mevcutOp=null;opSembol="";exprEl.textContent="";guncelle();
-}
-
+// ── Klavye ────────────────────────────────────────────────────
 document.addEventListener("keydown",e=>{
   if("0123456789".includes(e.key))append(e.key);
   else if(e.key==="."||e.key===",")append(".");
   else if(e.key==="Backspace")sil();
-  else if(e.key==="Escape")temizle();
+  else if(e.key==="Escape"){temizle();modalKapat();}
   else if(e.key==="Enter"||e.key==="=")hesapla();
   else if(e.key==="+")setOp("toplama","+");
   else if(e.key==="-")setOp("cikarma","−");
@@ -636,6 +785,7 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="%")setOp("mod","%");
 });
 
+// ── Başlat ────────────────────────────────────────────────────
 kurlariGuncelle();
 altinGuncelle();
 setInterval(kurlariGuncelle,60000);
