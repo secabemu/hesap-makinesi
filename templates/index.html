@@ -2,10 +2,17 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Hesap Makinesi</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet"/>
   <style>
+    /*
+      Responsive strateji:
+      - clamp(min, tercih, max) → küçük ekranda min, büyük ekranda max
+      - vw (viewport width) → ekran genişliğine göre orantılı boyut
+      - Kart maks 480px, ortada, mobilde tam genişlik
+    */
+
     :root {
       --glass:  rgba(255,255,255,0.18);
       --border: rgba(255,255,255,0.3);
@@ -18,185 +25,240 @@
       --usd:    #16a34a;
       --eur:    #2563eb;
       --gold:   #b45309;
+
+      /* Temel ölçek birimi — tüm boyutlar buradan türer */
+      --s: clamp(12px, 3.2vw, 16px);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      width: 100%;
-      overflow-x: hidden;
-    }
+    html, body { width: 100%; overflow-x: hidden; }
 
     body {
       font-family: 'Outfit', sans-serif;
+      font-size: var(--s);
       min-height: 100vh;
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 1rem .75rem 2rem;
+      padding: calc(var(--s) * .8) calc(var(--s) * .6) calc(var(--s) * 2);
       background: #e8d5ff;
-      position: relative;
     }
 
     body::before {
       content: '';
       position: fixed; inset: -50%;
-      background: conic-gradient(from 0deg at 30% 40%, #c084fc, #818cf8, #67e8f9, #34d399, #fbbf24, #f472b6, #c084fc);
+      background: conic-gradient(from 0deg at 30% 40%, #c084fc,#818cf8,#67e8f9,#34d399,#fbbf24,#f472b6,#c084fc);
       animation: spin 18s linear infinite;
       opacity: .5; filter: blur(60px); pointer-events: none;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .blob { position: fixed; border-radius: 50%; filter: blur(40px); opacity: .35; animation: float 8s ease-in-out infinite; }
-    .blob1 { width:220px;height:220px;background:#a78bfa;top:-60px;left:-60px; }
-    .blob2 { width:180px;height:180px;background:#67e8f9;bottom:-40px;right:-40px;animation-delay:-3s; }
-    .blob3 { width:150px;height:150px;background:#fbbf24;top:50%;left:72%;animation-delay:-5s; }
-    @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(12px,-16px);}}
+    .blob { position:fixed; border-radius:50%; filter:blur(40px); opacity:.35; animation:float 8s ease-in-out infinite; }
+    .blob1 { width:40vw;height:40vw;max-width:220px;max-height:220px;background:#a78bfa;top:-10vw;left:-10vw; }
+    .blob2 { width:32vw;height:32vw;max-width:180px;max-height:180px;background:#67e8f9;bottom:-8vw;right:-8vw;animation-delay:-3s; }
+    .blob3 { width:28vw;height:28vw;max-width:160px;max-height:160px;background:#fbbf24;top:50%;left:70%;animation-delay:-5s; }
+    @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(10px,-14px);}}
 
+    /* ── Kart ── */
     .card {
       position: relative; z-index: 10;
-      width: 100%; max-width: 440px;
+      width: 100%; max-width: 480px;
       background: var(--glass);
       backdrop-filter: blur(28px) saturate(1.8);
       -webkit-backdrop-filter: blur(28px) saturate(1.8);
       border: 1.5px solid var(--border);
-      border-radius: 24px;
-      padding: 1.1rem 1.1rem 1.4rem;
-      box-shadow: 0 8px 40px var(--shadow), 0 1.5px 0 rgba(255,255,255,0.6) inset;
-      animation: slideUp .45s cubic-bezier(.22,1,.36,1);
+      border-radius: calc(var(--s) * 1.6);
+      padding: calc(var(--s) * .9) calc(var(--s) * .9) calc(var(--s) * 1.2);
+      box-shadow: 0 8px 40px var(--shadow), 0 1.5px 0 rgba(255,255,255,.6) inset;
+      animation: slideUp .4s cubic-bezier(.22,1,.36,1);
     }
-    @keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 
     /* ── Panel ortak ── */
     .panel-kart {
       background: rgba(255,255,255,0.5);
       border: 1px solid rgba(255,255,255,0.7);
-      border-radius: 12px;
-      padding: .6rem .8rem;
-      margin-bottom: .75rem;
+      border-radius: calc(var(--s) * .85);
+      padding: calc(var(--s) * .55) calc(var(--s) * .7);
+      margin-bottom: calc(var(--s) * .6);
     }
     .panel-baslik {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: .45rem;
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom: calc(var(--s) * .4);
     }
     .panel-baslik span {
-      font-size: .58rem; font-weight: 700; letter-spacing: 1.8px;
-      text-transform: uppercase; color: var(--muted);
-      font-family: 'DM Mono', monospace;
+      font-size: calc(var(--s) * .62); font-weight:700; letter-spacing:1.6px;
+      text-transform:uppercase; color:var(--muted); font-family:'DM Mono',monospace;
     }
     .yenile-btn {
-      font-size: .58rem; color: var(--muted); font-family: 'DM Mono', monospace;
-      cursor: pointer; border: none; background: none;
-      padding: .15rem .4rem; border-radius: 99px; transition: background .15s;
+      font-size: calc(var(--s) * .6); color:var(--muted); font-family:'DM Mono',monospace;
+      cursor:pointer; border:none; background:none;
+      padding: .15rem .4rem; border-radius:99px; transition:background .15s;
+      -webkit-tap-highlight-color:transparent;
     }
-    .yenile-btn:hover { background: rgba(124,58,237,.1); color: var(--accent); }
+    .yenile-btn:active { background:rgba(124,58,237,.1); }
 
     /* ── Döviz ── */
-    .doviz-satirlar { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
-    .kur-kart { border-radius: 9px; padding: .45rem .6rem; }
+    .doviz-satirlar { display:grid; grid-template-columns:1fr 1fr; gap:calc(var(--s) * .35); }
+    .kur-kart { border-radius:calc(var(--s) * .65); padding:calc(var(--s) * .4) calc(var(--s) * .55); }
     .kur-kart.usd { background:rgba(22,163,74,.08); border:1px solid rgba(22,163,74,.2); }
     .kur-kart.eur { background:rgba(37,99,235,.08); border:1px solid rgba(37,99,235,.2); }
-    .kur-etiket { font-size:.58rem; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; font-family:'DM Mono',monospace; }
+    .kur-etiket {
+      font-size:calc(var(--s) * .6); font-weight:700; letter-spacing:1.2px;
+      text-transform:uppercase; font-family:'DM Mono',monospace;
+    }
     .kur-kart.usd .kur-etiket { color:var(--usd); }
     .kur-kart.eur .kur-etiket { color:var(--eur); }
-    .kur-deger { font-size:1.05rem; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); line-height:1.3; }
-    .kur-alt   { font-size:.55rem; color:var(--muted); font-family:'DM Mono',monospace; }
-
-    .donusum-butonlar { display:grid; grid-template-columns:repeat(4,1fr); gap:.3rem; margin-top:.4rem; }
-    .don-btn {
-      font-family:'DM Mono',monospace; font-size:.6rem; font-weight:600;
-      padding:.32rem .1rem; border-radius:7px; border:1.5px solid;
-      cursor:pointer; transition:all .15s; text-align:center;
+    .kur-deger {
+      font-size:calc(var(--s) * 1.05); font-weight:700;
+      font-family:'DM Mono',monospace; color:var(--text); line-height:1.3;
     }
-    .don-btn:active { transform:scale(.95); }
+    .kur-alt { font-size:calc(var(--s) * .55); color:var(--muted); font-family:'DM Mono',monospace; }
+
+    .donusum-butonlar { display:grid; grid-template-columns:repeat(4,1fr); gap:calc(var(--s) * .28); margin-top:calc(var(--s) * .38); }
+    .don-btn {
+      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .62); font-weight:600;
+      padding:calc(var(--s) * .3) calc(var(--s) * .1);
+      border-radius:calc(var(--s) * .5); border:1.5px solid;
+      cursor:pointer; transition:all .12s; text-align:center;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .don-btn:active { transform:scale(.93); }
     .don-btn.tl-usd { background:rgba(22,163,74,.08); border-color:rgba(22,163,74,.3); color:var(--usd); }
     .don-btn.usd-tl { background:rgba(22,163,74,.15); border-color:rgba(22,163,74,.4); color:var(--usd); }
     .don-btn.tl-eur { background:rgba(37,99,235,.08); border-color:rgba(37,99,235,.3); color:var(--eur); }
     .don-btn.eur-tl { background:rgba(37,99,235,.15); border-color:rgba(37,99,235,.4); color:var(--eur); }
 
     /* ── Altın ── */
-    .altin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.35rem; }
+    .altin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:calc(var(--s) * .3); }
     .altin-kart {
       background:rgba(180,83,9,.06); border:1px solid rgba(180,83,9,.18);
-      border-radius:9px; padding:.4rem .5rem; cursor:pointer; transition:all .15s;
+      border-radius:calc(var(--s) * .6); padding:calc(var(--s) * .35) calc(var(--s) * .45);
+      cursor:pointer; transition:all .12s; -webkit-tap-highlight-color:transparent;
     }
-    .altin-kart:active { transform:scale(.96); background:rgba(180,83,9,.14); }
-    .altin-isim  { font-size:.55rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--gold); font-family:'DM Mono',monospace; }
-    .altin-fiyat { font-size:.88rem; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); margin-top:.1rem; line-height:1.2; }
-    .altin-alt   { font-size:.52rem; color:var(--muted); font-family:'DM Mono',monospace; }
+    .altin-kart:active { transform:scale(.95); background:rgba(180,83,9,.14); }
+    .altin-isim {
+      font-size:calc(var(--s) * .56); font-weight:700; letter-spacing:1px;
+      text-transform:uppercase; color:var(--gold); font-family:'DM Mono',monospace;
+    }
+    .altin-fiyat {
+      font-size:calc(var(--s) * .88); font-weight:700;
+      font-family:'DM Mono',monospace; color:var(--text);
+      margin-top:calc(var(--s) * .1); line-height:1.2;
+    }
+    .altin-alt { font-size:calc(var(--s) * .52); color:var(--muted); font-family:'DM Mono',monospace; }
 
-    .altin-don-butonlar { display:grid; grid-template-columns:repeat(3,1fr); gap:.3rem; margin-top:.4rem; }
+    .altin-don-butonlar { display:grid; grid-template-columns:repeat(3,1fr); gap:calc(var(--s) * .28); margin-top:calc(var(--s) * .38); }
     .altin-don-btn {
-      font-family:'DM Mono',monospace; font-size:.6rem; font-weight:600;
-      padding:.32rem .1rem; border-radius:7px; border:1.5px solid rgba(180,83,9,.25);
+      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .6); font-weight:600;
+      padding:calc(var(--s) * .3) calc(var(--s) * .1);
+      border-radius:calc(var(--s) * .5); border:1.5px solid rgba(180,83,9,.25);
       background:rgba(180,83,9,.07); color:var(--gold);
-      cursor:pointer; transition:all .15s; text-align:center;
+      cursor:pointer; -webkit-tap-highlight-color:transparent;
     }
-    .altin-don-btn:active { transform:scale(.96); }
+    .altin-don-btn:active { transform:scale(.95); }
 
-    /* ── Hesap Makinesi ── */
-    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
-    .header h1 { font-size:.82rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--accent); }
-    .mode-badge { font-family:'DM Mono',monospace; font-size:.6rem; padding:.18rem .55rem; background:rgba(124,58,237,.12); border:1px solid rgba(124,58,237,.25); border-radius:99px; color:var(--accent); }
+    /* ── Hesap Ekranı ── */
+    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:calc(var(--s) * .65); }
+    .header h1 {
+      font-size:calc(var(--s) * .82); font-weight:800;
+      letter-spacing:3px; text-transform:uppercase; color:var(--accent);
+    }
+    .mode-badge {
+      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .6);
+      padding:.18rem .55rem; background:rgba(124,58,237,.12);
+      border:1px solid rgba(124,58,237,.25); border-radius:99px; color:var(--accent);
+    }
 
     .display {
-      background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.75);
-      border-radius:14px; padding:.75rem 1rem .85rem;
-      margin-bottom:.75rem; min-height:85px;
-      display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-end; gap:.2rem;
-      overflow: hidden;
+      background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,.75);
+      border-radius:calc(var(--s) * 1); padding:calc(var(--s) * .65) calc(var(--s) * .85) calc(var(--s) * .75);
+      margin-bottom:calc(var(--s) * .65); min-height:calc(var(--s) * 5.5);
+      display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-end; gap:calc(var(--s) * .18);
+      overflow:hidden;
     }
-    .expr   { font-family:'DM Mono',monospace; font-size:.68rem; color:var(--muted); min-height:1.1em; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .expr {
+      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .68); color:var(--muted);
+      min-height:1.1em; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
     .result {
-      font-family:'DM Mono',monospace; font-size:1.9rem; font-weight:500;
-      color:var(--text); word-break:break-all; line-height:1.1;
-      transition:color .2s; max-width:100%; text-align:right;
+      font-family:'DM Mono',monospace; font-weight:500; color:var(--text);
+      word-break:break-all; line-height:1.1; transition:color .2s, font-size .15s;
+      max-width:100%; text-align:right;
+      font-size: calc(var(--s) * 2);
     }
     .result.ok    { color:var(--green); }
-    .result.error { color:var(--red); font-size:.85rem; }
+    .result.error { color:var(--red); font-size:calc(var(--s) * .9) !important; }
     .result.doviz { color:#2563eb; }
     .result.gold  { color:var(--gold); }
 
     /* ── Bellek ── */
-    .mem-bar { display:flex; gap:.28rem; margin-bottom:.65rem; }
+    .mem-bar { display:flex; gap:calc(var(--s) * .25); margin-bottom:calc(var(--s) * .55); }
     .mem-bar button {
-      flex:1; font-family:'DM Mono',monospace; font-size:.62rem;
-      padding:.28rem 0; border:1px solid rgba(124,58,237,.2);
-      border-radius:6px; background:rgba(124,58,237,.07); color:var(--accent);
-      cursor:pointer; transition:all .15s;
+      flex:1; font-family:'DM Mono',monospace; font-size:calc(var(--s) * .65);
+      padding:calc(var(--s) * .28) 0;
+      border:1px solid rgba(124,58,237,.2); border-radius:calc(var(--s) * .45);
+      background:rgba(124,58,237,.07); color:var(--accent);
+      cursor:pointer; -webkit-tap-highlight-color:transparent;
     }
     .mem-bar button:active { background:rgba(124,58,237,.2); }
 
     /* ── Tabs ── */
-    .tabs { display:flex; gap:.3rem; margin-bottom:.65rem; background:rgba(255,255,255,0.4); border:1px solid var(--border); border-radius:10px; padding:.2rem; }
-    .tab  { flex:1; padding:.35rem; border:none; background:transparent; color:var(--muted); font-family:'Outfit',sans-serif; font-size:.75rem; font-weight:700; border-radius:7px; cursor:pointer; transition:all .2s; }
+    .tabs {
+      display:flex; gap:calc(var(--s) * .28); margin-bottom:calc(var(--s) * .55);
+      background:rgba(255,255,255,.4); border:1px solid var(--border);
+      border-radius:calc(var(--s) * .75); padding:calc(var(--s) * .18);
+    }
+    .tab {
+      flex:1; padding:calc(var(--s) * .32); border:none; background:transparent;
+      color:var(--muted); font-family:'Outfit',sans-serif;
+      font-size:calc(var(--s) * .78); font-weight:700;
+      border-radius:calc(var(--s) * .55); cursor:pointer; transition:all .18s;
+      -webkit-tap-highlight-color:transparent;
+    }
     .tab.active { background:white; color:var(--accent); box-shadow:0 2px 8px rgba(124,58,237,.18); }
 
     /* ── Tuşlar ── */
     .panel-calc { display:none; }
     .panel-calc.active { display:grid; }
-    .grid-4 { grid-template-columns:repeat(4,1fr); gap:.38rem; }
-    .grid-5 { grid-template-columns:repeat(5,1fr); gap:.32rem; }
+    .grid-4 { grid-template-columns:repeat(4,1fr); gap:calc(var(--s) * .35); }
+    .grid-5 { grid-template-columns:repeat(5,1fr); gap:calc(var(--s) * .28); }
 
     button.key {
-      font-family:'DM Mono',monospace; font-size:.85rem; font-weight:500;
-      padding:.72rem .3rem; border:1.5px solid rgba(255,255,255,0.6);
-      border-radius:11px; background:rgba(255,255,255,0.6); color:var(--text);
-      cursor:pointer; transition:all .12s;
-      -webkit-tap-highlight-color: transparent;
+      font-family:'DM Mono',monospace;
+      font-size:calc(var(--s) * .9); font-weight:500;
+      padding:calc(var(--s) * .7) calc(var(--s) * .3);
+      border:1.5px solid rgba(255,255,255,.6);
+      border-radius:calc(var(--s) * .75);
+      background:rgba(255,255,255,.6); color:var(--text);
+      cursor:pointer; transition:all .1s;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
     }
-    button.key:active { transform:scale(.93); }
+    button.key:active { transform:scale(.91); }
     button.key.op  { background:rgba(124,58,237,.1); color:var(--accent); border-color:rgba(124,58,237,.25); }
-    button.key.eq  { background:linear-gradient(135deg,#7c3aed,#06b6d4); color:white; border-color:transparent; font-size:1.1rem; }
+    button.key.eq  {
+      background:linear-gradient(135deg,#7c3aed,#06b6d4); color:white;
+      border-color:transparent; font-size:calc(var(--s) * 1.1);
+    }
     button.key.clr { background:rgba(220,38,38,.09); color:var(--red); border-color:rgba(220,38,38,.2); }
-    button.key.sci { background:rgba(6,182,212,.09); color:#0369a1; border-color:rgba(6,182,212,.25); font-size:.68rem; }
-    button.key.num0 { background:rgba(255,255,255,0.8); font-size:.92rem; font-weight:600; }
+    button.key.sci { background:rgba(6,182,212,.09); color:#0369a1; border-color:rgba(6,182,212,.25); font-size:calc(var(--s) * .68); }
+    button.key.num0 { background:rgba(255,255,255,.8); font-size:calc(var(--s) * .95); font-weight:600; }
 
     /* ── Geçmiş ── */
-    .history { margin-top:.8rem; border-top:1px solid rgba(255,255,255,.5); padding-top:.6rem; }
-    .history-title { font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-family:'DM Mono',monospace; margin-bottom:.4rem; }
-    .history-list  { max-height:75px; overflow-y:auto; display:flex; flex-direction:column; gap:.2rem; }
-    .hist-item { font-family:'DM Mono',monospace; font-size:.67rem; color:var(--muted); padding:.24rem .45rem; background:rgba(255,255,255,.4); border-radius:6px; cursor:pointer; display:flex; justify-content:space-between; }
+    .history { margin-top:calc(var(--s) * .7); border-top:1px solid rgba(255,255,255,.5); padding-top:calc(var(--s) * .55); }
+    .history-title {
+      font-size:calc(var(--s) * .58); letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); font-family:'DM Mono',monospace; margin-bottom:calc(var(--s) * .35);
+    }
+    .history-list { max-height:calc(var(--s) * 5); overflow-y:auto; display:flex; flex-direction:column; gap:calc(var(--s) * .18); }
+    .hist-item {
+      font-family:'DM Mono',monospace; font-size:calc(var(--s) * .67); color:var(--muted);
+      padding:calc(var(--s) * .22) calc(var(--s) * .42);
+      background:rgba(255,255,255,.4); border-radius:calc(var(--s) * .42);
+      cursor:pointer; display:flex; justify-content:space-between;
+      -webkit-tap-highlight-color:transparent;
+    }
     .hist-item:active { background:rgba(255,255,255,.7); }
     .hist-item .res { color:var(--green); font-weight:500; }
 
@@ -374,190 +436,156 @@
   </div>
 
 <script>
-// ── Durum ─────────────────────────────────────────────────────
-let gosterHam = "0";   // Ham sayı (hesaplama için)
-let tampon=null, mevcutOp=null, opSembol="", yeniGiris=true, bellek=0;
-let aktifKurlar={USD:null,EUR:null};
-let aktifAltin={};
+let gosterHam="0", tampon=null, mevcutOp=null, opSembol="", yeniGiris=true, bellek=0;
+let aktifKurlar={USD:null,EUR:null}, aktifAltin={};
 
-const resultEl = document.getElementById("result");
-const exprEl   = document.getElementById("expr");
+const resultEl=document.getElementById("result");
+const exprEl=document.getElementById("expr");
 
-// ── Basamak Ayırıcı ───────────────────────────────────────────
-function formatliGoster(ham) {
-  if (ham === "" || ham === "-") return ham;
-  const eksiIsareti = ham.startsWith("-") ? "-" : "";
-  const pozitif = ham.replace("-","");
-  const parcalar = pozitif.split(".");
-  const tamKisim = parcalar[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return eksiIsareti + tamKisim + (parcalar[1] !== undefined ? "," + parcalar[1] : "");
+function formatli(ham) {
+  if(!ham||ham==="-") return ham||"0";
+  const eksi=ham.startsWith("-")?"-":"";
+  const poz=ham.replace("-","");
+  const [tam,ondalik]=poz.split(".");
+  const tamF=tam.replace(/\B(?=(\d{3})+(?!\d))/g,".");
+  return eksi+tamF+(ondalik!==undefined?","+ondalik:"");
 }
 
 function guncelle(cls="") {
-  resultEl.textContent = formatliGoster(gosterHam);
-  resultEl.className   = "result" + (cls?" "+cls:"");
-  // Font küçültme — uzun sayılarda
-  const len = resultEl.textContent.length;
-  resultEl.style.fontSize = len > 14 ? "1.2rem" : len > 10 ? "1.5rem" : "1.9rem";
+  const txt=formatli(gosterHam);
+  resultEl.textContent=txt;
+  resultEl.className="result"+(cls?" "+cls:"");
+  // Uzun sayıda font küç
+  const s=getComputedStyle(document.documentElement).getPropertyValue("--s").trim();
+  const base=parseFloat(s)||14;
+  const len=txt.replace(/[^0-9]/g,"").length;
+  resultEl.style.fontSize= len>12?`${base*1.3}px`:len>9?`${base*1.65}px`:`${base*2}px`;
 }
 
-// ── Döviz ─────────────────────────────────────────────────────
-async function kurlariGuncelle() {
-  try {
-    const k = await fetch("/api/kur").then(r=>r.json());
-    if (!k.USD) return;
-    aktifKurlar = k;
-    document.getElementById("usdDeger").textContent =
-      k.USD.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
-    document.getElementById("eurDeger").textContent =
-      k.EUR.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
-    document.getElementById("usdTarih").textContent = k.tarih+" · "+(k.kaynak||"");
-    document.getElementById("eurTarih").textContent = k.tarih+" · "+(k.kaynak||"");
-  } catch(e) {}
+async function kurlariGuncelle(){
+  try{
+    const k=await fetch("/api/kur").then(r=>r.json());
+    if(!k.USD)return;
+    aktifKurlar=k;
+    document.getElementById("usdDeger").textContent=k.USD.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+    document.getElementById("eurDeger").textContent=k.EUR.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+    document.getElementById("usdTarih").textContent=k.tarih+" · "+(k.kaynak||"");
+    document.getElementById("eurTarih").textContent=k.tarih+" · "+(k.kaynak||"");
+  }catch(e){}
 }
 
-function dovizCevir(yon) {
-  const deger = parseFloat(gosterHam); if(isNaN(deger)) return;
-  let sonuc, ifade;
-  if      (yon==="TL→USD"){if(!aktifKurlar.USD)return;sonuc=deger/aktifKurlar.USD;ifade=`${formatliGoster(gosterHam)} ₺ → $`;}
-  else if (yon==="USD→TL"){if(!aktifKurlar.USD)return;sonuc=deger*aktifKurlar.USD;ifade=`$${formatliGoster(gosterHam)} → ₺`;}
-  else if (yon==="TL→EUR"){if(!aktifKurlar.EUR)return;sonuc=deger/aktifKurlar.EUR;ifade=`${formatliGoster(gosterHam)} ₺ → €`;}
-  else if (yon==="EUR→TL"){if(!aktifKurlar.EUR)return;sonuc=deger*aktifKurlar.EUR;ifade=`€${formatliGoster(gosterHam)} → ₺`;}
-  sonuc=Math.round(sonuc*100)/100;
-  exprEl.textContent=ifade;
-  gosterHam=String(sonuc);
-  guncelle("doviz");
-  histEkle(ifade,sonuc);
-  yeniGiris=true;
+function dovizCevir(yon){
+  const d=parseFloat(gosterHam);if(isNaN(d))return;
+  let s,i;
+  if(yon==="TL→USD"){if(!aktifKurlar.USD)return;s=d/aktifKurlar.USD;i=`${formatli(gosterHam)} ₺→$`;}
+  else if(yon==="USD→TL"){if(!aktifKurlar.USD)return;s=d*aktifKurlar.USD;i=`$${formatli(gosterHam)}→₺`;}
+  else if(yon==="TL→EUR"){if(!aktifKurlar.EUR)return;s=d/aktifKurlar.EUR;i=`${formatli(gosterHam)} ₺→€`;}
+  else if(yon==="EUR→TL"){if(!aktifKurlar.EUR)return;s=d*aktifKurlar.EUR;i=`€${formatli(gosterHam)}→₺`;}
+  s=Math.round(s*100)/100;
+  exprEl.textContent=i; gosterHam=String(s); guncelle("doviz");
+  histEkle(i,s); yeniGiris=true;
 }
 
-// ── Altın ─────────────────────────────────────────────────────
-function fiyatGoster(id, deger) {
+function fiyatGoster(id,v){
   const el=document.getElementById(id);
-  if(!el) return;
-  el.textContent=deger
-    ? deger.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})
-    : "—";
+  if(!el)return;
+  el.textContent=v?v.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
 }
 
-async function altinGuncelle() {
-  try {
+async function altinGuncelle(){
+  try{
     const d=await fetch("/api/altin").then(r=>r.json());
     if(d.hata){document.getElementById("altinKaynak").textContent=d.hata;return;}
     aktifAltin=d;
-    fiyatGoster("ag24",d.gram24);
-    fiyatGoster("ag22",d.gram22);
-    fiyatGoster("agCeyrek",d.ceyrek);
-    fiyatGoster("agYarim",d.yarim);
-    fiyatGoster("agCum",d.cumhuriyet);
-    fiyatGoster("ag18",d.gram18);
+    fiyatGoster("ag24",d.gram24); fiyatGoster("ag22",d.gram22);
+    fiyatGoster("agCeyrek",d.ceyrek); fiyatGoster("agYarim",d.yarim);
+    fiyatGoster("agCum",d.cumhuriyet); fiyatGoster("ag18",d.gram18);
     document.getElementById("altinKaynak").textContent=(d.tarih||"")+" · "+(d.kaynak||"");
-  } catch(e){}
+  }catch(e){}
 }
 
-function altinEkrana(tur) {
-  const fiyat=aktifAltin[tur]; if(!fiyat) return;
-  gosterHam=String(fiyat);
-  const isimler={gram24:"24 Ayar Gram",gram22:"22 Ayar Gram",gram18:"18 Ayar Gram",ceyrek:"Çeyrek",yarim:"Yarım",cumhuriyet:"Cumhuriyet"};
-  exprEl.textContent=isimler[tur]||tur;
-  guncelle("gold");
-  yeniGiris=true;
+function altinEkrana(t){
+  const f=aktifAltin[t];if(!f)return;
+  gosterHam=String(f);
+  const n={gram24:"24 Ayar Gram",gram22:"22 Ayar Gram",gram18:"18 Ayar Gram",ceyrek:"Çeyrek",yarim:"Yarım",cumhuriyet:"Cumhuriyet"};
+  exprEl.textContent=n[t]||t; guncelle("gold"); yeniGiris=true;
 }
 
-function altinCevir(yon) {
-  const deger=parseFloat(gosterHam); if(isNaN(deger)) return;
-  let sonuc,ifade;
-  if      (yon==="TL→gr24"){if(!aktifAltin.gram24)return;sonuc=deger/aktifAltin.gram24;ifade=`${formatliGoster(gosterHam)} ₺ → gr(24)`;}
-  else if (yon==="TL→gr22"){if(!aktifAltin.gram22)return;sonuc=deger/aktifAltin.gram22;ifade=`${formatliGoster(gosterHam)} ₺ → gr(22)`;}
-  else if (yon==="gr24→TL"){if(!aktifAltin.gram24)return;sonuc=deger*aktifAltin.gram24;ifade=`${gosterHam} gr(24) → ₺`;}
-  sonuc=Math.round(sonuc*1000)/1000;
-  exprEl.textContent=ifade;
-  gosterHam=String(sonuc);
-  guncelle("gold");
-  histEkle(ifade,sonuc);
-  yeniGiris=true;
+function altinCevir(y){
+  const d=parseFloat(gosterHam);if(isNaN(d))return;
+  let s,i;
+  if(y==="TL→gr24"){if(!aktifAltin.gram24)return;s=d/aktifAltin.gram24;i=`${formatli(gosterHam)} ₺→gr(24)`;}
+  else if(y==="TL→gr22"){if(!aktifAltin.gram22)return;s=d/aktifAltin.gram22;i=`${formatli(gosterHam)} ₺→gr(22)`;}
+  else if(y==="gr24→TL"){if(!aktifAltin.gram24)return;s=d*aktifAltin.gram24;i=`${gosterHam}gr(24)→₺`;}
+  s=Math.round(s*1000)/1000;
+  exprEl.textContent=i; gosterHam=String(s); guncelle("gold");
+  histEkle(i,s); yeniGiris=true;
 }
 
-// ── Hesap Makinesi ────────────────────────────────────────────
-function append(k) {
+function append(k){
   if(yeniGiris){gosterHam="";yeniGiris=false;}
-  if(k==="."&&gosterHam.includes(".")) return;
-  if((gosterHam==="0"||gosterHam==="")&&k!=="."&&k!=="("&&k!==")") gosterHam=k;
+  if(k==="."&&gosterHam.includes("."))return;
+  if((gosterHam==="0"||gosterHam==="")&&k!=="."&&k!=="("&&k!==")")gosterHam=k;
   else gosterHam+=k;
   guncelle();
 }
-function appendConst(val,label){gosterHam=String(val);exprEl.textContent=label;guncelle();}
-function toggleSign(){
-  if(gosterHam.startsWith("-"))gosterHam=gosterHam.slice(1);
-  else if(gosterHam!=="0")gosterHam="-"+gosterHam;
-  guncelle();
-}
+function appendConst(v,l){gosterHam=String(v);exprEl.textContent=l;guncelle();}
+function toggleSign(){if(gosterHam.startsWith("-"))gosterHam=gosterHam.slice(1);else if(gosterHam!=="0")gosterHam="-"+gosterHam;guncelle();}
 function sil(){gosterHam=gosterHam.length>1?gosterHam.slice(0,-1):"0";guncelle();}
 function temizle(){gosterHam="0";tampon=null;mevcutOp=null;opSembol="";exprEl.textContent="";guncelle();}
-function setOp(op,sembol){
-  tampon=parseFloat(gosterHam);mevcutOp=op;opSembol=sembol;
-  exprEl.textContent=`${formatliGoster(gosterHam)} ${sembol}`;
-  yeniGiris=true;
-}
+function setOp(op,s){tampon=parseFloat(gosterHam);mevcutOp=op;opSembol=s;exprEl.textContent=`${formatli(gosterHam)} ${s}`;yeniGiris=true;}
 
 async function hesapla(){
-  if(!mevcutOp) return;
+  if(!mevcutOp)return;
   const b=parseFloat(gosterHam);
-  exprEl.textContent=`${formatliGoster(String(tampon))} ${opSembol} ${formatliGoster(gosterHam)} =`;
+  exprEl.textContent=`${formatli(String(tampon))} ${opSembol} ${formatli(gosterHam)} =`;
   await apiHesapla({islem:mevcutOp,a:tampon,b},`${tampon} ${opSembol} ${b}`);
   mevcutOp=null;
 }
 async function sciHesapla(op){
   const a=parseFloat(gosterHam);
-  exprEl.textContent=`${op}(${formatliGoster(gosterHam)}) =`;
+  exprEl.textContent=`${op}(${formatli(gosterHam)}) =`;
   await apiHesapla({islem:op,a},`${op}(${a})`);
 }
 async function apiHesapla(payload,ifade){
   try{
     const res=await fetch("/hesapla",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
     const data=await res.json();
-    if(data.hata){gosterHam=data.hata;resultEl.textContent=data.hata;resultEl.className="result error";}
-    else{
-      gosterHam=String(data.sonuc);
-      guncelle("ok");
-      histEkle(ifade,data.sonuc);
-      setTimeout(()=>resultEl.classList.remove("ok"),700);
-    }
-  }catch(e){gosterHam="Hata";resultEl.textContent="Hata";resultEl.className="result error";}
+    if(data.hata){gosterHam="";resultEl.textContent=data.hata;resultEl.className="result error";resultEl.style.fontSize="";}
+    else{gosterHam=String(data.sonuc);guncelle("ok");histEkle(ifade,data.sonuc);setTimeout(()=>resultEl.classList.remove("ok"),700);}
+  }catch(e){resultEl.textContent="Hata";resultEl.className="result error";}
   yeniGiris=true;
 }
 
-function memStore() {bellek=parseFloat(gosterHam);exprEl.textContent=`MS → ${formatliGoster(gosterHam)}`;}
+function memStore(){bellek=parseFloat(gosterHam);exprEl.textContent=`MS → ${formatli(gosterHam)}`;}
 function memRecall(){gosterHam=String(bellek);guncelle();}
-function memClear() {bellek=0;exprEl.textContent="Bellek temizlendi";}
-function memAdd()   {bellek+=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
-function memSub()   {bellek-=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
+function memClear(){bellek=0;exprEl.textContent="Bellek temizlendi";}
+function memAdd(){bellek+=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
+function memSub(){bellek-=parseFloat(gosterHam);exprEl.textContent=`M = ${bellek.toLocaleString("tr-TR")}`;}
 
 function histEkle(ifade,sonuc){
   const list=document.getElementById("histList");
   const div=document.createElement("div");
   div.className="hist-item";
-  const gorSonuc=typeof sonuc==="number"?sonuc.toLocaleString("tr-TR",{maximumFractionDigits:4}):sonuc;
-  div.innerHTML=`<span>${ifade}</span><span class="res">${gorSonuc}</span>`;
+  const g=typeof sonuc==="number"?sonuc.toLocaleString("tr-TR",{maximumFractionDigits:4}):sonuc;
+  div.innerHTML=`<span>${ifade}</span><span class="res">${g}</span>`;
   div.onclick=()=>{gosterHam=String(sonuc);guncelle();};
   list.prepend(div);
-  if(list.children.length>10) list.lastChild.remove();
+  if(list.children.length>10)list.lastChild.remove();
 }
 
 function switchTab(id,btn){
   document.querySelectorAll(".panel-calc").forEach(p=>{p.classList.remove("active");p.style.display="none";});
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  const panel=document.getElementById("panel-"+id);
-  panel.style.display="grid";panel.classList.add("active");
+  const p=document.getElementById("panel-"+id);
+  p.style.display="grid";p.classList.add("active");
   btn.classList.add("active");
   document.getElementById("modeBadge").textContent=id==="temel"?"Temel":"Bilimsel";
 }
 
-// Klavye (masaüstü için)
 document.addEventListener("keydown",e=>{
   if("0123456789".includes(e.key))append(e.key);
-  else if(e.key===".")append(".");
-  else if(e.key===",")append(".");
+  else if(e.key==="."||e.key===",")append(".");
   else if(e.key==="Backspace")sil();
   else if(e.key==="Escape")temizle();
   else if(e.key==="Enter"||e.key==="=")hesapla();
