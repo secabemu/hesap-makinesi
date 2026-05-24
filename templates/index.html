@@ -402,6 +402,78 @@
 
     @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
     .yukleniyor { animation: pulse 1.5s infinite; }
+  
+    /* ── Dönüşüm Sonuç Stilleri ── */
+    .d-btn, .a-btn {
+      display: flex; flex-direction: column;
+      align-items: center; gap: calc(var(--s)*.2);
+    }
+    .don-etiket {
+      font-size: calc(var(--s)*.62); font-weight: 700; line-height: 1;
+    }
+    .don-sonuc {
+      font-family: 'DM Mono', monospace;
+      font-size: calc(var(--s)*.75); font-weight: 600;
+      background: rgba(255,255,255,.75);
+      border-radius: calc(var(--s)*.35);
+      padding: calc(var(--s)*.12) calc(var(--s)*.35);
+      line-height: 1.2; min-width: calc(var(--s)*3.5);
+      text-align: center; letter-spacing: -.3px;
+    }
+    .d-btn.gu .don-sonuc { color: #16A34A; }
+    .d-btn.ug .don-sonuc { color: #15803D; }
+    .d-btn.ge .don-sonuc { color: #2563EB; }
+    .d-btn.eg .don-sonuc { color: #1D4ED8; }
+    .altin-sonuc { color: #92400E !important; }
+    .don-sonuc.aktif {
+      background: rgba(255,255,255,.95);
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+    }
+  
+    /* ══ Canlı Dönüşüm Kartları ══ */
+    .canli-donusum-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: calc(var(--s)*.4); margin-top: calc(var(--s)*.5);
+    }
+    .canli-kart {
+      border-radius: calc(var(--s)*.65);
+      padding: calc(var(--s)*.5) calc(var(--s)*.65);
+      cursor: pointer; transition: all .12s;
+      border: 1.5px solid transparent;
+      -webkit-tap-highlight-color: transparent;
+      display: flex; flex-direction: column; gap: calc(var(--s)*.18);
+    }
+    .canli-kart:active { transform: scale(.95); filter: brightness(.95); }
+
+    .canli-etiket {
+      font-size: calc(var(--s)*.62); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .8px; opacity: .75;
+    }
+    .canli-sonuc {
+      font-family: 'DM Mono', monospace;
+      font-size: calc(var(--s)*1.05); font-weight: 700;
+      letter-spacing: -.5px; line-height: 1.2;
+      transition: all .2s;
+    }
+
+    /* Döviz renkleri */
+    .usd-kart   { background:#F0FDF4; border-color:#86EFAC; }
+    .usd-kart-k { background:#DCFCE7; border-color:#4ADE80; }
+    .eur-kart   { background:#EFF6FF; border-color:#93C5FD; }
+    .eur-kart-k { background:#DBEAFE; border-color:#60A5FA; }
+    .usd-renk   { color:#15803D; }
+    .usd-renk-k { color:#166534; }
+    .eur-renk   { color:#1D4ED8; }
+    .eur-renk-k { color:#1E3A8A; }
+
+    /* Altın renkleri */
+    .altin24-kart { background:#FFFBEB; border-color:#FCD34D; }
+    .altin22-kart { background:#EFF6FF; border-color:#93C5FD; }
+    .altin24-renk { color:#B45309; }
+    .altin22-renk { color:#1D4ED8; }
+
+    /* Sıfır/boş durumda soluk göster */
+    .canli-sonuc.bos { opacity: .35; }
   </style>
 </head>
 <body>
@@ -425,11 +497,23 @@
         <div class="kur-alt"   id="eurTarih">Yükleniyor...</div>
       </div>
     </div>
-    <div class="doviz-butonlar">
-      <button class="d-btn gu" onclick="dovizCevir('TL→USD')">TL→$</button>
-      <button class="d-btn ug" onclick="dovizCevir('USD→TL')">$→TL</button>
-      <button class="d-btn ge" onclick="dovizCevir('TL→EUR')">TL→€</button>
-      <button class="d-btn eg" onclick="dovizCevir('EUR→TL')">€→TL</button>
+    <div class="canli-donusum-grid">
+      <div class="canli-kart usd-kart" onclick="dovizCevir('TL→USD')">
+        <div class="canli-etiket">TL → $</div>
+        <div class="canli-sonuc usd-renk" id="ds-tl-usd">—</div>
+      </div>
+      <div class="canli-kart usd-kart-k" onclick="dovizCevir('USD→TL')">
+        <div class="canli-etiket">$ → TL</div>
+        <div class="canli-sonuc usd-renk-k" id="ds-usd-tl">—</div>
+      </div>
+      <div class="canli-kart eur-kart" onclick="dovizCevir('TL→EUR')">
+        <div class="canli-etiket">TL → €</div>
+        <div class="canli-sonuc eur-renk" id="ds-tl-eur">—</div>
+      </div>
+      <div class="canli-kart eur-kart-k" onclick="dovizCevir('EUR→TL')">
+        <div class="canli-etiket">€ → TL</div>
+        <div class="canli-sonuc eur-renk-k" id="ds-eur-tl">—</div>
+      </div>
     </div>
   </div>
 
@@ -465,13 +549,25 @@
     <div class="altin-butonlar">
       <div class="don-grup">
         <div class="don-grup-baslik">24 Ayar</div>
-        <button class="a-btn a-btn-24" onclick="altinCevir('TL→gr24')">₺ → gram</button>
-        <button class="a-btn a-btn-24" onclick="altinCevir('gr24→TL')">gram → ₺</button>
+        <div class="canli-kart altin24-kart" onclick="altinCevir('TL→gr24')">
+          <div class="canli-etiket">₺ → gram</div>
+          <div class="canli-sonuc altin24-renk" id="ds-tl-gr24">—</div>
+        </div>
+        <div class="canli-kart altin24-kart" onclick="altinCevir('gr24→TL')">
+          <div class="canli-etiket">gram → ₺</div>
+          <div class="canli-sonuc altin24-renk" id="ds-gr24-tl">—</div>
+        </div>
       </div>
       <div class="don-grup">
         <div class="don-grup-baslik">22 Ayar</div>
-        <button class="a-btn a-btn-22" onclick="altinCevir('TL→gr22')">₺ → gram</button>
-        <button class="a-btn a-btn-22" onclick="altinCevir('gr22→TL')">gram → ₺</button>
+        <div class="canli-kart altin22-kart" onclick="altinCevir('TL→gr22')">
+          <div class="canli-etiket">₺ → gram</div>
+          <div class="canli-sonuc altin22-renk" id="ds-tl-gr22">—</div>
+        </div>
+        <div class="canli-kart altin22-kart" onclick="altinCevir('gr22→TL')">
+          <div class="canli-etiket">gram → ₺</div>
+          <div class="canli-sonuc altin22-renk" id="ds-gr22-tl">—</div>
+        </div>
       </div>
     </div>
     <div class="kur-alt" id="altinKaynak" style="text-align:right;margin-top:.4rem;"></div>
@@ -655,6 +751,8 @@ function guncelle(cls="") {
   const mn=txt.replace(/[^\d]/g,"").length;
   modalDegerEl.style.fontSize=mn>12?`${s*1.4}px`:mn>9?`${s*1.8}px`:`${s*2.2}px`;
   modalExprEl.textContent=exprEl.textContent;
+  // Otomatik dönüşümleri güncelle
+  otomatikDonusumlar();
 }
 
 // ── Modal ─────────────────────────────────────────────────────
@@ -758,6 +856,7 @@ async function kurlariGuncelle(){
     document.getElementById("eurDeger").textContent=k.EUR.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
     document.getElementById("usdTarih").textContent=k.tarih+" · "+(k.kaynak||"");
     document.getElementById("eurTarih").textContent=k.tarih+" · "+(k.kaynak||"");
+    otomatikDonusumlar();
   }catch(e){}
 }
 function dovizCevir(y){
@@ -786,6 +885,7 @@ async function altinGuncelle(){
     fp("ag24",d.gram24); fp("ag22",d.gram22);
     fp("agCeyrek",d.ceyrek); fp("agYarim",d.yarim); 
     document.getElementById("altinKaynak").textContent=(d.tarih||"")+" · "+(d.kaynak||"");
+    otomatikDonusumlar();
   }catch(e){}
 }
 function altinEkrana(t){
@@ -804,6 +904,63 @@ function altinCevir(y){
   s=Math.round(s*1000)/1000;
   exprEl.textContent=i; ham=String(s); guncelle("gold");
   histEkle(i,s); yeniGiris=true;
+}
+
+
+// ── Otomatik Canlı Dönüşümler ────────────────────────────────
+function numFmt(sayi, ondalik=2) {
+  if(sayi===null||sayi===undefined||isNaN(sayi)) return "—";
+  return sayi.toLocaleString("tr-TR",{minimumFractionDigits:ondalik,maximumFractionDigits:ondalik});
+}
+
+function sonucYaz(id, deger, ondalik, birim) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const gecerli = deger!==null && !isNaN(deger) && isFinite(deger);
+  if(!gecerli) {
+    el.textContent = "—";
+    el.classList.add("bos");
+    return;
+  }
+  el.textContent = numFmt(deger, ondalik) + (birim?" "+birim:"");
+  el.classList.remove("bos");
+}
+
+function otomatikDonusumlar() {
+  const d = parseFloat(ham);
+  const gecerli = !isNaN(d) && d > 0;
+
+  // Döviz
+  if(gecerli && aktifKurlar.USD) {
+    sonucYaz("ds-tl-usd", d/aktifKurlar.USD, 4, "$");
+    sonucYaz("ds-usd-tl", d*aktifKurlar.USD, 2, "₺");
+  } else {
+    sonucYaz("ds-tl-usd", null);
+    sonucYaz("ds-usd-tl", null);
+  }
+  if(gecerli && aktifKurlar.EUR) {
+    sonucYaz("ds-tl-eur", d/aktifKurlar.EUR, 4, "€");
+    sonucYaz("ds-eur-tl", d*aktifKurlar.EUR, 2, "₺");
+  } else {
+    sonucYaz("ds-tl-eur", null);
+    sonucYaz("ds-eur-tl", null);
+  }
+
+  // Altın
+  if(gecerli && aktifAltin.gram24) {
+    sonucYaz("ds-tl-gr24", d/aktifAltin.gram24, 4, "gr");
+    sonucYaz("ds-gr24-tl", d*aktifAltin.gram24, 2, "₺");
+  } else {
+    sonucYaz("ds-tl-gr24", null);
+    sonucYaz("ds-gr24-tl", null);
+  }
+  if(gecerli && aktifAltin.gram22) {
+    sonucYaz("ds-tl-gr22", d/aktifAltin.gram22, 4, "gr");
+    sonucYaz("ds-gr22-tl", d*aktifAltin.gram22, 2, "₺");
+  } else {
+    sonucYaz("ds-tl-gr22", null);
+    sonucYaz("ds-gr22-tl", null);
+  }
 }
 
 // ── Klavye ────────────────────────────────────────────────────
