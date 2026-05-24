@@ -357,16 +357,13 @@
           <div class="altin-fiyat" id="agCum"><span class="yukleniyor">—</span></div>
           <div class="altin-alt">adet/₺</div>
         </div>
-        <div class="altin-kart" onclick="altinEkrana('gram18')">
-          <div class="altin-isim">18 Ayar</div>
-          <div class="altin-fiyat" id="ag18"><span class="yukleniyor">—</span></div>
-          <div class="altin-alt">gram/₺</div>
-        </div>
+
       </div>
-      <div class="altin-don-butonlar">
+      <div class="altin-don-butonlar" style="grid-template-columns:repeat(4,1fr);">
         <button class="altin-don-btn" onclick="altinCevir('TL→gr24')">TL→gr(24)</button>
-        <button class="altin-don-btn" onclick="altinCevir('TL→gr22')">TL→gr(22)</button>
         <button class="altin-don-btn" onclick="altinCevir('gr24→TL')">gr(24)→TL</button>
+        <button class="altin-don-btn" onclick="altinCevir('TL→gr22')">TL→gr(22)</button>
+        <button class="altin-don-btn" onclick="altinCevir('gr22→TL')">gr(22)→TL</button>
       </div>
       <div class="altin-alt" id="altinKaynak" style="text-align:right;margin-top:.3rem;"></div>
     </div>
@@ -528,7 +525,7 @@ async function altinGuncelle(){
     aktifAltin=d;
     fiyatGoster("ag24",d.gram24); fiyatGoster("ag22",d.gram22);
     fiyatGoster("agCeyrek",d.ceyrek); fiyatGoster("agYarim",d.yarim);
-    fiyatGoster("agCum",d.cumhuriyet); fiyatGoster("ag18",d.gram18);
+    fiyatGoster("agCum",d.cumhuriyet); 
     document.getElementById("altinKaynak").textContent=(d.tarih||"")+" · "+(d.kaynak||"");
   }catch(e){}
 }
@@ -546,6 +543,7 @@ function altinCevir(y){
   if(y==="TL→gr24"){if(!aktifAltin.gram24)return;s=d/aktifAltin.gram24;i=`${formatli(gosterHam)} ₺→gr(24)`;}
   else if(y==="TL→gr22"){if(!aktifAltin.gram22)return;s=d/aktifAltin.gram22;i=`${formatli(gosterHam)} ₺→gr(22)`;}
   else if(y==="gr24→TL"){if(!aktifAltin.gram24)return;s=d*aktifAltin.gram24;i=`${gosterHam}gr(24)→₺`;}
+  else if(y==="gr22→TL"){if(!aktifAltin.gram22)return;s=d*aktifAltin.gram22;i=`${gosterHam}gr(22)→₺`;}
   s=Math.round(s*1000)/1000;
   exprEl.textContent=i; gosterHam=String(s); guncelle("gold");
   histEkle(i,s); yeniGiris=true;
