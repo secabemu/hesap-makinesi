@@ -32,13 +32,24 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: calc(var(--s)*.8) calc(var(--s)*.6) calc(var(--s)*2);
+      padding: calc(var(--s)*.8) calc(var(--s)*.8) calc(var(--s)*2);
     }
 
     /* ── Ana Kart ── */
     .kart {
-      width: 100%; max-width: 460px;
+      width: 100%; max-width: 900px;
       display: flex; flex-direction: column; gap: calc(var(--s)*.65);
+    }
+    .iki-sutun {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: calc(var(--s)*.65);
+      align-items: start;
+    }
+    .sol-sutun { display: flex; flex-direction: column; gap: calc(var(--s)*.65); }
+    /* Mobil: tek sütun */
+    @media (max-width: 600px) {
+      .iki-sutun { grid-template-columns: 1fr; }
     }
 
     /* ── Üst Header ── */
@@ -217,6 +228,11 @@
       border-radius: calc(var(--s)*1);
       box-shadow: 0 2px 12px rgba(0,48,135,.06);
       overflow: hidden;
+      position: sticky;
+      top: calc(var(--s)*.8);
+    }
+    @media (max-width: 600px) {
+      .ekran-alani { position: static; }
     }
     .ekran-ust {
       background: linear-gradient(135deg, var(--lacivert), var(--mavi));
@@ -484,6 +500,9 @@
 <body>
 <div class="kart">
 
+  <div class="iki-sutun">
+  <!-- SOL: Döviz + Altın -->
+  <div class="sol-sutun">
   <!-- ══ DÖVİZ ══ -->
   <div class="panel">
     <div class="panel-baslik">
@@ -577,7 +596,9 @@
     </div>
     <div class="kur-alt" id="altinKaynak" style="text-align:right;margin-top:.4rem;"></div>
   </div>
+  </div><!-- /sol-sutun -->
 
+  <!-- SAĞ: Hesap Makinesi -->
   <!-- ══ HESAP MAKİNESİ EKRANI ══ -->
   <div class="ekran-alani">
 
@@ -688,6 +709,7 @@
 
   </div><!-- /ekran-alani -->
 
+  </div><!-- /iki-sutun -->
 </div><!-- /kart -->
 
 <!-- ══ BANKA STİLİ NUMPAD MODAL ══ -->
